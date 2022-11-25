@@ -20,4 +20,12 @@ public class GlobalExceptionHandler {
 	   return new ResponseEntity<ErrorDetails>(ed, HttpStatus.BAD_REQUEST);
 	}
 	
+	
+	@ExceptionHandler(AdminException.class)
+	public ResponseEntity<ErrorDetails> adminExceptionHandler(AdminException adminException, WebRequest wr){
+		
+		ErrorDetails ed = new ErrorDetails(LocalDateTime.now(), adminException.getMessage(), wr.getDescription(false));
+	
+	   return new ResponseEntity<ErrorDetails>(ed, HttpStatus.BAD_REQUEST);
+	}
 }

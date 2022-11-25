@@ -9,12 +9,14 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 import lombok.Data;
 import net.bytebuddy.utility.RandomString;
 
 @Data
 @Entity
+@Table(name = "Orders")
 public class Order {
     
 	
@@ -24,7 +26,7 @@ public class Order {
 	private String orderStatus;
 	private double billAmount;
 	@ManyToOne
-	private User customer;
+	private User user;
 	@OneToMany
 	private List<Product> products = new ArrayList<>();
 	
@@ -39,7 +41,7 @@ public class Order {
 	    this.orderDate = LocalDateTime.now();
 	    this.orderStatus = "Pending";
 	    this.billAmount = bill;
-	    this.customer = customer;
+	    this.user = customer;
 	    this.products = customer.getCart().getProducts();
 	
 	}

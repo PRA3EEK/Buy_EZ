@@ -19,7 +19,7 @@ import net.bytebuddy.utility.RandomString;
 public class User extends AbstractUser{
 	@Id
 	private String userId;
-	@OneToMany(mappedBy = "customer")
+	@OneToMany(mappedBy = "user")
 	private List<Order> orders = new ArrayList<>();
 	@OneToOne
 	private Cart cart;

@@ -6,4 +6,6 @@ import com.buy_EZ.models.Admin;
 
 public interface AdminRepo extends JpaRepository<Admin, String>{
  
+	public Admin findByUsername(String username);
+	
 }

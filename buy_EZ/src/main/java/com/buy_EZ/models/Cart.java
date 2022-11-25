@@ -19,7 +19,7 @@ public class Cart {
 	private String cartId;
 	@OneToOne
     private User customer;
-	@OneToMany()
+	@OneToMany
 	private List<Product> products = new ArrayList<>();
 	
 	public Cart(User customer) {

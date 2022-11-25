@@ -1,5 +1,7 @@
 package com.buy_EZ.models;
 
+import javax.persistence.Embedded;
+import javax.persistence.MappedSuperclass;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -8,8 +10,13 @@ import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Valid
+@MappedSuperclass
 public class AbstractUser {
    
 	
@@ -26,6 +33,7 @@ public class AbstractUser {
 	@NotNull(message = "Address cannot be null")
 //	@NotBlank(message = "Address cannot be empty")
 //	@Size(min = 5, max = 225, message = "Length of the address must be greater than 5")
+	@Embedded
 	private Address address;
 	
 	@NotNull(message = "Mobile number cannot be null")
