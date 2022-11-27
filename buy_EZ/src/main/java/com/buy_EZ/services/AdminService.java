@@ -2,9 +2,11 @@ package com.buy_EZ.services;
 
 import com.buy_EZ.exceptions.AdminException;
 import com.buy_EZ.exceptions.CategoryException;
+import com.buy_EZ.exceptions.ProductException;
 import com.buy_EZ.models.Admin;
 import com.buy_EZ.models.AdminDto;
 import com.buy_EZ.models.Category;
+import com.buy_EZ.models.Product;
 
 public interface AdminService {
 
@@ -12,4 +14,5 @@ public interface AdminService {
 	
 	public Category insertCategory(Category category, String loggedInAdminId) throws AdminException, CategoryException;
 	
+	public Product insertProduct(Product product, String categoryName, String loggedInAdminId) throws AdminException, ProductException, CategoryException;
 }

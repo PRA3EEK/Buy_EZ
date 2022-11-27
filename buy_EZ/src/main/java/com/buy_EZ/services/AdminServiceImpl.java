@@ -7,13 +7,16 @@ import org.springframework.stereotype.Service;
 
 import com.buy_EZ.exceptions.AdminException;
 import com.buy_EZ.exceptions.CategoryException;
+import com.buy_EZ.exceptions.ProductException;
 import com.buy_EZ.models.Admin;
 import com.buy_EZ.models.AdminCurrentSession;
 import com.buy_EZ.models.AdminDto;
 import com.buy_EZ.models.Category;
+import com.buy_EZ.models.Product;
 import com.buy_EZ.repositories.AdminCurrentSessionRepo;
 import com.buy_EZ.repositories.AdminRepo;
 import com.buy_EZ.repositories.CategoryRepo;
+import com.buy_EZ.repositories.ProductRepo;
 
 import net.bytebuddy.utility.RandomString;
 
@@ -29,6 +32,9 @@ public class AdminServiceImpl implements AdminService{
 	
 	@Autowired
 	private CategoryRepo categoryRepo;
+	
+	@Autowired
+	private ProductRepo productRepo;
 	
 	@Override
 	public AdminDto insertAdmin(Admin admin, String id) throws AdminException {
@@ -63,7 +69,7 @@ public class AdminServiceImpl implements AdminService{
 		if(categoryRepo.findByCategoryName(category.getCategoryName())==null) {
 			
 			if(adminCurrentSession.findById(loggedInAdminId).get()!=null) {
-				category.setCategoryId(category.getCategoryName()+"_"+RandomString.make(7));
+				category.setCategoryId(category.getCategoryName().split(" ")[0]+"_"+RandomString.make(7));
 				return categoryRepo.save(category);
 				
 			}
@@ -71,6 +77,28 @@ public class AdminServiceImpl implements AdminService{
 			
 		}
 		throw new CategoryException("A category is already present with the name "+category.getCategoryName());
+	}
+
+	@Override
+	public Product insertProduct(Product product,String categoryName, String loggedInAdminId) throws AdminException, ProductException, CategoryException {
+		// TODO Auto-generated method stub
+		if(adminCurrentSession.findById(loggedInAdminId).get()!=null) {
+			
+			if(categoryRepo.findByCategoryName(categoryName)!=null) {
+				
+				Category c = categoryRepo.findByCategoryName(categoryName);
+				
+				c.getProducts().add(product);
+				
+				product.setCategory(c);
+				product.setProductId("_"+RandomString.make(12)+"_");
+				
+				return productRepo.save(product);
+				
+			}
+			throw new CategoryException("No categroy present with the name "+categoryName);
+		}
+		throw new AdminException("No admin is logged in with the id "+loggedInAdminId);
 	}
 
 	

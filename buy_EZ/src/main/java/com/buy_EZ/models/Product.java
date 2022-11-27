@@ -3,12 +3,22 @@ package com.buy_EZ.models;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import net.bytebuddy.utility.RandomString;
 
 @Data
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class Product {
    
 	@Id
@@ -20,20 +30,17 @@ public class Product {
 	private String specification;
 	private String manufacturer;
 	private Integer quantity;
+	@Min(value = 0, message = "min rating should be 0")
+	@Max(value = 5, message = "max rating should be 5")
+	@NotNull
+//	@JsonIgnore
+	private Double ratings = 0.0;
+	@NotNull
+//	@JsonIgnore
+	private Integer numberOfRatings=0;
 	@ManyToOne
 	private Category category;
 	
-	
-	public Product(String productName, Double price, String color, String dimension, String specification, String manufacturer, Integer quantity, Category category) {
-		this.category = category;
-		this.productId = productName+"_"+RandomString.make(7);
-		this.productName = productName;
-		this.price = price;
-		this.color = color;
-		this.dimension = dimension;
-		this.manufacturer = manufacturer;
-		this.quantity = quantity;
-	}
 	
 	
 	

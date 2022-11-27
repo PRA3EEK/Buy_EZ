@@ -1,6 +1,7 @@
 package com.buy_EZ.controllers;
 
 import javax.validation.Valid;
+import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,13 +11,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.buy_EZ.exceptions.AdminException;
 import com.buy_EZ.exceptions.CategoryException;
+import com.buy_EZ.exceptions.ProductException;
 import com.buy_EZ.models.Admin;
 import com.buy_EZ.models.AdminDto;
 import com.buy_EZ.models.Category;
+import com.buy_EZ.models.Product;
 import com.buy_EZ.repositories.AdminRepo;
 import com.buy_EZ.services.AdminService;
 
@@ -41,6 +46,15 @@ public class AdminController {
     public ResponseEntity<Category> insertCategory(@Valid @RequestBody Category category, @PathVariable("loggedInAdminId") String adminId) throws AdminException, CategoryException{
     	return new ResponseEntity<Category>(adminService.insertCategory(category, adminId), HttpStatus.OK);
     }
+    
+    
+    @PostMapping("/product/{loggedInAdminId}")
+    public ResponseEntity<Product> insertProduct(@Valid @RequestBody Product product, @PathVariable("loggedInAdminId") String adminId, @RequestParam(value = "categoryName") String name) throws AdminException, ProductException, CategoryException{
+    	
+    	return new ResponseEntity<Product>(adminService.insertProduct(product, name, adminId), HttpStatus.OK);
+    	
+    }
+    
     
     @GetMapping("/msg")
 	public String message() {
