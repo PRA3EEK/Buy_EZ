@@ -15,6 +15,7 @@ import com.buy_EZ.comparators.LowToHighByRatings;
 import com.buy_EZ.exceptions.CategoryException;
 import com.buy_EZ.exceptions.CustomerException;
 import com.buy_EZ.exceptions.ProductException;
+import com.buy_EZ.models.Cart;
 import com.buy_EZ.models.Category;
 import com.buy_EZ.models.CustomerCurrentSession;
 import com.buy_EZ.models.Product;
@@ -154,25 +155,32 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Product addToCart(String productId, String loggedInId, Integer quantity) throws ProductException, CustomerException {
 		// TODO Auto-generated method stub
-		if(userSessionRepo.findById(loggedInId).get()!=null) {
+		if(userSessionRepo.findById(loggedInId).get()!=null) 
+		{
 			if(productRepo.findById(productId).get()!=null)
 			{
 				
 				User customer = customerRepo.findById(loggedInId).get();
 				Product p = productRepo.findById(productId).get();
 				List<Product> products = customer.getCart().getProducts();
+				List<Product> cartProducts = customer.getCart().getCartProducts();
 				
-				for(Product pro:products) {
-					if(pro.getProductId() == p.getProductId()) {
+				for(Product pro:cartProducts) 
+				{
+					if(pro.getProductId() == p.getProductId()) 
+					{
 						throw new ProductException("Product is already present in the cart");
 					}
 				}
 				
-				if(p.getQuantity()>quantity) {
+				
+				if(p.getQuantity()>quantity) 
+				{
 					p.setQuantity(p.getQuantity()-quantity);
 					productRepo.save(p);
-					p.setQuantity(quantity);
 					customer.getCart().getProducts().add(p);
+					p.setQuantity(quantity);
+					customer.getCart().getCartProducts().add(p);
 					customerRepo.save(customer);
 					return p;
 				}
@@ -184,4 +192,83 @@ public class UserServiceImpl implements UserService {
 		throw new CustomerException("You are not logged in with the id "+loggedInId);
 	}
 
+	public Product deleteProductFromCart(String productId, String loggedInId) throws ProductException, CustomerException
+	{
+		
+		Optional<User> op = customerRepo.findById(loggedInId);
+		
+		if(op.get()!=null)
+		{
+			Optional<CustomerCurrentSession> op2 = userSessionRepo.findById(loggedInId);
+		    if(op2.get()!=null)
+		    {
+		    	User customer = op.get();
+		    	
+		    	List<Product> products = customer.getCart().getProducts();
+		    	Product ogp = productRepo.findById(productId).get();
+		    	Product res = null;
+		    	if(ogp!=null)
+		    	{
+		    		for(Product p:products) 
+			    	{
+			    		if(p.getProductId() == ogp.getProductId()) 
+			    		{
+			    			ogp.setQuantity(ogp.getQuantity()+p.getQuantity());
+			    			productRepo.save(ogp);
+			    			res = p;
+			    			products.remove(p);
+			    			break;
+			    		}
+			    	}	
+		    		customer.getCart().setProducts(products);
+		    		customerRepo.save(customer);
+		    	return res;   
+		    	}else {
+		    		
+		    		for(Product p:products) 
+		    		{
+		    			if(p.getProductId() == productId)
+		    			{
+		    				products.remove(p);
+		    				productRepo.save(p);
+		    				res  = p;
+		    				break;
+		    			}
+		    		}
+		    		customer.getCart().setProducts(products);
+		    		customerRepo.save(customer);
+		        return res;
+		    	}
+		    	
+		    	
+		    }
+		 throw new CustomerException("user is not logged in");
+		}
+	  throw new CustomerException("User is not registered");
+	}
+	
+	public Cart getCartDetails(String loggedInId) throws CustomerException 
+	{
+		
+		Optional<User> user = customerRepo.findById(loggedInId);
+		
+		if(user.get()!=null) 
+		{
+			
+			Optional<CustomerCurrentSession> op = userSessionRepo.findById(loggedInId);
+			
+			if(op.get()!=null) 
+			{
+				
+				return user.get().getCart();
+				
+			}
+			
+			throw new CustomerException("You are not logged in");
+			
+		}
+		
+		throw new CustomerException("User is not registered");
+		
+	}
 }

@@ -3,6 +3,7 @@ package com.buy_EZ.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,8 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
+
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -29,7 +29,7 @@ public class User extends AbstractUser{
 	private String userId;
 	@OneToMany(mappedBy = "user")@JsonIgnore
 	private List<Order> orders = new ArrayList<>();
-	@OneToOne@JsonIgnore
+	@OneToOne(cascade = CascadeType.ALL)@JsonIgnore
 	private Cart cart;
 	
 	

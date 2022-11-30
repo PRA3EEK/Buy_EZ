@@ -13,10 +13,12 @@ import com.buy_EZ.models.AdminCurrentSession;
 import com.buy_EZ.models.AdminDto;
 import com.buy_EZ.models.Category;
 import com.buy_EZ.models.Product;
+import com.buy_EZ.models.SubCategory;
 import com.buy_EZ.repositories.AdminCurrentSessionRepo;
 import com.buy_EZ.repositories.AdminRepo;
 import com.buy_EZ.repositories.CategoryRepo;
 import com.buy_EZ.repositories.ProductRepo;
+import com.buy_EZ.repositories.SubCategoryRepo;
 
 import net.bytebuddy.utility.RandomString;
 
@@ -35,6 +37,9 @@ public class AdminServiceImpl implements AdminService{
 	
 	@Autowired
 	private ProductRepo productRepo;
+	
+	@Autowired
+	private SubCategoryRepo subCategoryRepo;
 	
 	@Override
 	public AdminDto insertAdmin(Admin admin, String id) throws AdminException {
@@ -80,21 +85,31 @@ public class AdminServiceImpl implements AdminService{
 	}
 
 	@Override
-	public Product insertProduct(Product product,String categoryName, String loggedInAdminId) throws AdminException, ProductException, CategoryException {
+	public Product insertProduct(Product product,String categoryName, String subCategoryName, String loggedInAdminId) throws AdminException, ProductException, CategoryException {
 		// TODO Auto-generated method stub
-		if(adminCurrentSession.findById(loggedInAdminId).get()!=null) {
+		if(adminCurrentSession.findById(loggedInAdminId).get()!=null) 
+		{
 			
-			if(categoryRepo.findByCategoryName(categoryName)!=null) {
-				
-				Category c = categoryRepo.findByCategoryName(categoryName);
-				
-				c.getProducts().add(product);
-				
-				product.setCategory(c);
-				product.setProductId("_"+RandomString.make(12)+"_");
-				
-				return productRepo.save(product);
-				
+			if(categoryRepo.findByCategoryName(categoryName)!=null) 
+			{
+				if(subCategoryRepo.findByName(subCategoryName)!=null)
+				{
+					Product p = productRepo.findByProductName(product.getProductName());
+					if(p==null)
+					{					
+						Category c = categoryRepo.findByCategoryName(categoryName);
+						SubCategory sc = subCategoryRepo.findByName(subCategoryName);
+						c.getProducts().add(product);
+						sc.getProducts().add(product);
+						product.setCategory(c);
+						product.setSubCategory(sc);
+						product.setProductId("_"+RandomString.make(12)+"_");
+						
+						return productRepo.save(product);
+					}
+					throw new ProductException("Product already present with the name "+product.getProductName());
+				}
+				throw new CategoryException("No sub category is present with the name "+subCategoryName);
 			}
 			throw new CategoryException("No categroy present with the name "+categoryName);
 		}

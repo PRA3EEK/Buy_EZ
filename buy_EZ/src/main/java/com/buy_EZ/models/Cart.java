@@ -5,10 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,10 +25,13 @@ import net.bytebuddy.utility.RandomString;
 public class Cart {
     @Id
 	private String cartId;
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)@JsonIgnore
     private User customer;
-	@OneToMany
+	@ManyToMany(fetch = FetchType.EAGER)@JsonIgnore
 	private List<Product> products = new ArrayList<>();
+	@ElementCollection(targetClass = Product.class)
+	private List<Product> cartProducts = new ArrayList<>();
+	
 	
 	public Cart(User customer) {
 		this.cartId = customer.getUsername()+"_"+RandomString.make(7)+"_"+LocalDateTime.now().getYear();

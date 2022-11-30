@@ -49,9 +49,9 @@ public class AdminController {
     
     
     @PostMapping("/product/{loggedInAdminId}")
-    public ResponseEntity<Product> insertProduct(@Valid @RequestBody Product product, @PathVariable("loggedInAdminId") String adminId, @RequestParam(value = "categoryName") String name) throws AdminException, ProductException, CategoryException{
+    public ResponseEntity<Product> insertProduct(@Valid @RequestBody Product product, @PathVariable("loggedInAdminId") String adminId, @RequestParam(value = "categoryName") String name, @RequestParam(value = "subCategoryName") String subCategoryName) throws AdminException, ProductException, CategoryException{
     	
-    	return new ResponseEntity<Product>(adminService.insertProduct(product, name, adminId), HttpStatus.OK);
+    	return new ResponseEntity<Product>(adminService.insertProduct(product, name, subCategoryName, adminId), HttpStatus.OK);
     	
     }
     

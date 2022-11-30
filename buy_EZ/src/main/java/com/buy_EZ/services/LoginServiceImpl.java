@@ -2,6 +2,7 @@ package com.buy_EZ.services;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -83,7 +84,21 @@ Admin a = adminRepo.findByUsername(admin.getUsername());
 	}
 
 
-
+    public AdminDto adminRegister(Admin admin) throws AdminException{
+    	
+    	Admin op = adminRepo.findByUsername(admin.getUsername());
+    	
+    	if(op == null)
+    	{
+    		admin.setAdminId(UUID.randomUUID().toString());
+    		adminRepo.save(admin);
+    		AdminDto admindto = new AdminDto(admin.getAdminId(), admin.getUsername(), admin.getPassword());
+    		return admindto;
+    	}
+    	
+    	
+    	throw new AdminException("Admin already present with the username "+admin.getUsername());
+    }
 	
 
 

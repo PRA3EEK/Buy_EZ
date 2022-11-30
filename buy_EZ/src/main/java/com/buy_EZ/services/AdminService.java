@@ -14,5 +14,6 @@ public interface AdminService {
 	
 	public Category insertCategory(Category category, String loggedInAdminId) throws AdminException, CategoryException;
 	
-	public Product insertProduct(Product product, String categoryName, String loggedInAdminId) throws AdminException, ProductException, CategoryException;
+	public Product insertProduct(Product product, String categoryName, String subCategoryName, String loggedInAdminId) throws AdminException, ProductException, CategoryException;
+
 }

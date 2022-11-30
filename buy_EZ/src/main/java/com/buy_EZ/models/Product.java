@@ -1,7 +1,11 @@
 package com.buy_EZ.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -40,7 +44,12 @@ public class Product {
 	private Integer numberOfRatings=0;
 	@ManyToOne
 	private Category category;
-	
+	@ManyToMany(mappedBy = "products")
+	private List<Cart> carts = new ArrayList<>();
+	private String imageUrl;
+	@ManyToOne
+	@NotNull
+	private SubCategory subCategory;
 	
 	
 	

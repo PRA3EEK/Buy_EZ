@@ -39,6 +39,7 @@ public class LoginController {
 	}
 	
 	
+	
 	@PostMapping("/customer/register")
 	public ResponseEntity<CustomerDto> registerCustomer(@RequestBody User customer) throws CustomerException{
 		return new ResponseEntity<CustomerDto>(loginService.customerRegister(customer), HttpStatus.OK);
@@ -48,6 +49,11 @@ public class LoginController {
 	@PostMapping("/customer/login")
 	public ResponseEntity<CustomerCurrentSession> loginCustomer(@RequestBody CustomerDto customerDto) throws CustomerException{
 		return new ResponseEntity<CustomerCurrentSession>(loginService.customerLogin(customerDto), HttpStatus.OK);
+	}
+	
+	@PostMapping("/admin/register")
+	public ResponseEntity<AdminDto> registerAdmin(@RequestBody Admin admin) throws AdminException{
+		return new ResponseEntity<AdminDto>(loginService.adminRegister(admin), HttpStatus.OK);
 	}
 	
 }

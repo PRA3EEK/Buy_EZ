@@ -22,15 +22,15 @@ public class Admin extends AbstractUser{
 	@Id
 	private String adminId;
 
-	public Admin(@NotNull(message = "Username cannot be null") String username,
-			@NotNull(message = "Password cannot be null") String password,
-			@NotNull(message = "Address cannot be null") Address address,
-			@NotNull(message = "Mobile number cannot be null") String mobileNumber,
-			@NotNull(message = "Email cannot be null") String email) {
-		super(username, password, address, mobileNumber, email);
-	
-	}
-	
+//	public Admin(@NotNull(message = "Username cannot be null") String username,
+//			@NotNull(message = "Password cannot be null") String password,
+//			@NotNull(message = "Address cannot be null") Address address,
+//			@NotNull(message = "Mobile number cannot be null") String mobileNumber,
+//			@NotNull(message = "Email cannot be null") String email) {
+//		super(username, password, address, mobileNumber, email);
+//	
+//	}
+//	
 	
 	
 }

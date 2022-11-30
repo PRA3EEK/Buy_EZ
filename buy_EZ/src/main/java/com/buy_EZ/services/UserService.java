@@ -5,6 +5,7 @@ import java.util.List;
 import com.buy_EZ.exceptions.CategoryException;
 import com.buy_EZ.exceptions.CustomerException;
 import com.buy_EZ.exceptions.ProductException;
+import com.buy_EZ.models.Cart;
 import com.buy_EZ.models.Product;
 
 public interface UserService {
@@ -27,5 +28,9 @@ public interface UserService {
 	public Product getProductDetailsById(String id, String loggedInUserId) throws ProductException, CustomerException;
 	
 	public Product addToCart(String productId, String loggedInId, Integer quantity) throws ProductException, CustomerException;
+	
+	public Product deleteProductFromCart(String productId, String loggedInId) throws ProductException, CustomerException;
+	
+	public Cart getCartDetails(String loggedInId) throws CustomerException;
 	
 }

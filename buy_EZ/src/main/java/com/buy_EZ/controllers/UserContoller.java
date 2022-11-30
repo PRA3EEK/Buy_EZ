@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.buy_EZ.exceptions.CategoryException;
 import com.buy_EZ.exceptions.CustomerException;
 import com.buy_EZ.exceptions.ProductException;
+import com.buy_EZ.models.Cart;
 import com.buy_EZ.models.Product;
 import com.buy_EZ.repositories.ProductRepo;
 import com.buy_EZ.services.UserService;
@@ -70,5 +72,15 @@ public class UserContoller {
 	@PostMapping("/searchById/add")
 	public ResponseEntity<Product> addProductToCart(@RequestParam(value = "productId") String productId, @RequestParam(value = "loggedInId") String id, @RequestParam(value = "quantity") Integer quant) throws ProductException, CustomerException{
 		return new ResponseEntity<Product>(userService.addToCart(productId, id, quant), HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/searchById/delete")
+	public ResponseEntity<Product> deleteProductFromCart(@RequestParam(value = "productId") String productId, @RequestParam(value = "loggedInId") String id) throws ProductException, CustomerException{
+        return new ResponseEntity<Product>(userService.deleteProductFromCart(productId, id), HttpStatus.OK);	
+	}
+	
+	@GetMapping("/cart")
+	public ResponseEntity<Cart> getCartDetails(@RequestParam("loggedInId") String id) throws CustomerException{
+		return new ResponseEntity<Cart>(userService.getCartDetails(id), HttpStatus.OK);
 	}
 }
