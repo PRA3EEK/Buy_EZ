@@ -48,7 +48,7 @@ public class Product {
 	private List<Cart> carts = new ArrayList<>();
 	private String imageUrl;
 	@ManyToOne
-	@NotNull
+//	@NotNull(message = "sub category must not be null")
 	private SubCategory subCategory;
 	
 	

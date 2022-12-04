@@ -17,6 +17,7 @@ import com.buy_EZ.exceptions.CustomerException;
 import com.buy_EZ.exceptions.ProductException;
 import com.buy_EZ.models.Cart;
 import com.buy_EZ.models.Product;
+import com.buy_EZ.models.ProductDTO;
 import com.buy_EZ.repositories.ProductRepo;
 import com.buy_EZ.services.UserService;
 
@@ -70,8 +71,8 @@ public class UserContoller {
 	}
 	
 	@PostMapping("/searchById/add")
-	public ResponseEntity<Product> addProductToCart(@RequestParam(value = "productId") String productId, @RequestParam(value = "loggedInId") String id, @RequestParam(value = "quantity") Integer quant) throws ProductException, CustomerException{
-		return new ResponseEntity<Product>(userService.addToCart(productId, id, quant), HttpStatus.OK);
+	public ResponseEntity<ProductDTO> addProductToCart(@RequestParam(value = "productId") String productId, @RequestParam(value = "loggedInId") String id, @RequestParam(value = "quantity") Integer quant) throws ProductException, CustomerException{
+		return new ResponseEntity<ProductDTO>(userService.addToCart(productId, id, quant), HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/searchById/delete")

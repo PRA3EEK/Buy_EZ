@@ -11,12 +11,16 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import net.bytebuddy.utility.RandomString;
 
 @Data
 @Entity
 @Table(name = "Orders")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Order {
     
 	
@@ -33,7 +37,8 @@ public class Order {
 	public Order(User customer) {
 		double bill = 0;
 		List<Product> products = customer.getCart().getProducts();
-		for(Product p:products) {
+		List<ProductDTO> cartProducts = customer.getCart().getCartProducts();
+		for(ProductDTO p:cartProducts) {
 			bill+=p.getPrice()*p.getQuantity();
 		}
 		
@@ -42,7 +47,7 @@ public class Order {
 	    this.orderStatus = "Pending";
 	    this.billAmount = bill;
 	    this.user = customer;
-	    this.products = customer.getCart().getProducts();
+	    this.products = products;
 	
 	}
 

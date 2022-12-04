@@ -22,6 +22,7 @@ import com.buy_EZ.models.Admin;
 import com.buy_EZ.models.AdminDto;
 import com.buy_EZ.models.Category;
 import com.buy_EZ.models.Product;
+import com.buy_EZ.models.SubCategory;
 import com.buy_EZ.repositories.AdminRepo;
 import com.buy_EZ.services.AdminService;
 
@@ -30,35 +31,46 @@ import net.bytebuddy.utility.RandomString;
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
-    @Autowired
+	@Autowired
 	private AdminRepo adminRepo;
-    
-    @Autowired
-    private AdminService adminService;
-	
-    @PostMapping("/admin/{loggedInAdminId}")
-	public ResponseEntity<AdminDto> insertAdmin(@Valid @RequestBody Admin admin, @PathVariable("loggedInAdminId") String adminId) throws AdminException {
-    	return new ResponseEntity<AdminDto>(adminService.insertAdmin(admin, adminId), HttpStatus.OK);
+
+	@Autowired
+	private AdminService adminService;
+
+	@PostMapping("/admin/{loggedInAdminId}")
+	public ResponseEntity<AdminDto> insertAdmin(@Valid @RequestBody Admin admin,
+			@PathVariable("loggedInAdminId") String adminId) throws AdminException {
+		return new ResponseEntity<AdminDto>(adminService.insertAdmin(admin, adminId), HttpStatus.OK);
 	}
- 
-    
-    @PostMapping("category/{loggedInAdminId}")
-    public ResponseEntity<Category> insertCategory(@Valid @RequestBody Category category, @PathVariable("loggedInAdminId") String adminId) throws AdminException, CategoryException{
-    	return new ResponseEntity<Category>(adminService.insertCategory(category, adminId), HttpStatus.OK);
-    }
-    
-    
-    @PostMapping("/product/{loggedInAdminId}")
-    public ResponseEntity<Product> insertProduct(@Valid @RequestBody Product product, @PathVariable("loggedInAdminId") String adminId, @RequestParam(value = "categoryName") String name, @RequestParam(value = "subCategoryName") String subCategoryName) throws AdminException, ProductException, CategoryException{
-    	
-    	return new ResponseEntity<Product>(adminService.insertProduct(product, name, subCategoryName, adminId), HttpStatus.OK);
-    	
-    }
-    
-    
-    @GetMapping("/msg")
-	public String message() {
+
+	@PostMapping("category/{loggedInAdminId}")
+	public ResponseEntity<Category> insertCategory(@Valid @RequestBody Category category,
+			@PathVariable("loggedInAdminId") String adminId) throws AdminException, CategoryException {
+		return new ResponseEntity<Category>(adminService.insertCategory(category, adminId), HttpStatus.OK);
+	}
+
+	@PostMapping("/product/{categoryName}/{subCategoryName}")
+	public ResponseEntity<Product> insertProduct(@Valid @RequestBody Product product,
+			@PathVariable("categoryName") String name, @PathVariable("subCategoryName") String subCategoryName,
+			@RequestParam(value = "loggedInAdminId") String adminId)
+			throws AdminException, ProductException, CategoryException {
+
+		return new ResponseEntity<Product>(adminService.insertProduct(product, name, subCategoryName, adminId),
+				HttpStatus.OK);
+
+	}
+
 	
+	@PostMapping("/subCategory")
+	public ResponseEntity<SubCategory> insertSubCategory(@RequestBody SubCategory subCategory, @RequestParam("parentCategoryName") String name, @RequestParam("loggedInAdminId") String id) throws CategoryException, AdminException{
+		
+		return new ResponseEntity<SubCategory>(adminService.insertSubCategory(subCategory, name, id), HttpStatus.OK);
+		
+	}
+	
+	@GetMapping("/msg")
+	public String message() {
+
 		return "Saved successfully";
 	}
 }

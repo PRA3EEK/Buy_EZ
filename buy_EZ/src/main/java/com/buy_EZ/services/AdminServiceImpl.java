@@ -1,6 +1,8 @@
 package com.buy_EZ.services;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,10 +44,10 @@ public class AdminServiceImpl implements AdminService{
 	private SubCategoryRepo subCategoryRepo;
 	
 	@Override
-	public AdminDto insertAdmin(Admin admin, String id) throws AdminException {
+	public AdminDto insertAdmin(Admin admin, String loggedInAdminid) throws AdminException {
 		// TODO Auto-generated method stub
 		//finding the current session of the admin who is trying to insert the new admin
-		Optional<AdminCurrentSession> session  = adminCurrentSession.findById(id);
+		Optional<AdminCurrentSession> session  = adminCurrentSession.findById(loggedInAdminid);
 		
 		if(session.get()!=null) {
 			
@@ -62,7 +64,7 @@ public class AdminServiceImpl implements AdminService{
 			throw new AdminException("An admin is already present with the username "+admin.getUsername());
 			
 		}else {
-			throw new AdminException("No admin is logged in with the id "+id);
+			throw new AdminException("No admin is logged in with the id "+loggedInAdminid);
 		}
 		
 	}
@@ -70,16 +72,12 @@ public class AdminServiceImpl implements AdminService{
 	@Override
 	public Category insertCategory(Category category, String loggedInAdminId) throws AdminException, CategoryException {
 		// TODO Auto-generated method stub
-		
 		if(categoryRepo.findByCategoryName(category.getCategoryName())==null) {
-			
 			if(adminCurrentSession.findById(loggedInAdminId).get()!=null) {
 				category.setCategoryId(category.getCategoryName().split(" ")[0]+"_"+RandomString.make(7));
-				return categoryRepo.save(category);
-				
+				return categoryRepo.save(category);	
 			}
-			throw new AdminException("No admin is logged in with the id "+loggedInAdminId);
-			
+	    	throw new AdminException("No admin is logged in with the id "+loggedInAdminId);	
 		}
 		throw new CategoryException("A category is already present with the name "+category.getCategoryName());
 	}
@@ -94,20 +92,28 @@ public class AdminServiceImpl implements AdminService{
 			{
 				if(subCategoryRepo.findByName(subCategoryName)!=null)
 				{
-					Product p = productRepo.findByProductName(product.getProductName());
-					if(p==null)
-					{					
-						Category c = categoryRepo.findByCategoryName(categoryName);
-						SubCategory sc = subCategoryRepo.findByName(subCategoryName);
-						c.getProducts().add(product);
-						sc.getProducts().add(product);
-						product.setCategory(c);
-						product.setSubCategory(sc);
-						product.setProductId("_"+RandomString.make(12)+"_");
-						
-						return productRepo.save(product);
+					List<Product> products = productRepo.findAll();
+					
+					for(Product p:products)
+					{
+						if(p.getProductName().equals(product.getProductName()) && p.getColor().equals(product.getColor()) && p.getDimension().equals(product.getDimension()) && p.getSpecification().equals(product.getSpecification()))
+						{
+							throw new ProductException("product is already present");
+						}
 					}
-					throw new ProductException("Product already present with the name "+product.getProductName());
+						Category c = categoryRepo.findByCategoryName(categoryName);
+							SubCategory sc = subCategoryRepo.findByName(subCategoryName);
+								
+								c.getProducts().add(product);
+								sc.getProducts().add(product);
+								product.setCategory(c);
+								product.setSubCategory(sc);
+								System.out.println(sc.getName());
+								product.setProductId("_"+RandomString.make(12)+"_");
+								
+								return productRepo.save(product);
+						
+					
 				}
 				throw new CategoryException("No sub category is present with the name "+subCategoryName);
 			}
@@ -116,6 +122,26 @@ public class AdminServiceImpl implements AdminService{
 		throw new AdminException("No admin is logged in with the id "+loggedInAdminId);
 	}
 
+	public SubCategory insertSubCategory(SubCategory subCategory, String parentCategoryName, String loggedInAdminId) throws CategoryException, AdminException{
+		
+		if(adminCurrentSession.findById(loggedInAdminId).get()!=null)
+		{
+			if(categoryRepo.findByCategoryName(parentCategoryName)!=null)
+			{
+				if(subCategoryRepo.findByName(subCategory.getName())==null)
+				{
+					Category c = categoryRepo.findByCategoryName(parentCategoryName);
+					c.getSubCategories().add(subCategory);
+					subCategory.setParentCategory(c);
+					subCategory.setSubCategoryId(UUID.randomUUID().toString());
+				return subCategoryRepo.save(subCategory);
+				}
+				throw new CategoryException("sub category is already present with the name "+subCategory.getName());
+			}
+			throw new CategoryException("No category is present with the name "+parentCategoryName);
+		}
+     throw new AdminException("You are not logged in as an admin");	
+	}
 	
 	
 }

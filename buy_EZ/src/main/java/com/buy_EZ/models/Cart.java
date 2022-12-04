@@ -27,10 +27,10 @@ public class Cart {
 	private String cartId;
 	@OneToOne(cascade = CascadeType.ALL)@JsonIgnore
     private User customer;
-	@ManyToMany(fetch = FetchType.EAGER)@JsonIgnore
+	@ManyToMany(fetch = FetchType.EAGER, targetEntity = Product.class)@JsonIgnore
 	private List<Product> products = new ArrayList<>();
-	@ElementCollection(targetClass = Product.class)
-	private List<Product> cartProducts = new ArrayList<>();
+    @OneToMany(targetEntity = ProductDTO.class, cascade = CascadeType.ALL)
+	private List<ProductDTO> cartProducts = new ArrayList<>();
 	
 	
 	public Cart(User customer) {

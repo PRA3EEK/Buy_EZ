@@ -18,11 +18,15 @@ import com.buy_EZ.exceptions.ProductException;
 import com.buy_EZ.models.Cart;
 import com.buy_EZ.models.Category;
 import com.buy_EZ.models.CustomerCurrentSession;
+import com.buy_EZ.models.Order;
 import com.buy_EZ.models.Product;
+import com.buy_EZ.models.ProductDTO;
 import com.buy_EZ.models.User;
 import com.buy_EZ.repositories.CategoryRepo;
 import com.buy_EZ.repositories.CustomerCurrentSessionRepo;
 import com.buy_EZ.repositories.CustomerRepo;
+import com.buy_EZ.repositories.OrderRepo;
+import com.buy_EZ.repositories.ProductDtoRepo;
 import com.buy_EZ.repositories.ProductRepo;
 
 @Service
@@ -36,6 +40,10 @@ public class UserServiceImpl implements UserService {
 	private ProductRepo productRepo;
 	@Autowired
 	private CategoryRepo categoryRepo;
+	@Autowired
+	private ProductDtoRepo productDtoRepo;
+    @Autowired 
+	private OrderRepo orderRepo;
 
 	@Override
 	public List<Product> searchProductsByname(String name, String loggedInUserId)
@@ -153,7 +161,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Product addToCart(String productId, String loggedInId, Integer quantity) throws ProductException, CustomerException {
+	public ProductDTO addToCart(String productId, String loggedInId, Integer quantity) throws ProductException, CustomerException {
 		// TODO Auto-generated method stub
 		if(userSessionRepo.findById(loggedInId).get()!=null) 
 		{
@@ -163,9 +171,9 @@ public class UserServiceImpl implements UserService {
 				User customer = customerRepo.findById(loggedInId).get();
 				Product p = productRepo.findById(productId).get();
 				List<Product> products = customer.getCart().getProducts();
-				List<Product> cartProducts = customer.getCart().getCartProducts();
 				
-				for(Product pro:cartProducts) 
+				
+				for(Product pro:products) 
 				{
 					if(pro.getProductId() == p.getProductId()) 
 					{
@@ -177,12 +185,13 @@ public class UserServiceImpl implements UserService {
 				if(p.getQuantity()>quantity) 
 				{
 					p.setQuantity(p.getQuantity()-quantity);
-					productRepo.save(p);
+//					productRepo.save(p);
+					ProductDTO pd = new ProductDTO(p.getProductId(), p.getProductName(), p.getPrice(), p.getColor(), p.getDimension(), p.getSpecification(), p.getManufacturer(), quantity, p.getRatings(), p.getNumberOfRatings(), p.getCategory().getCategoryName(), p.getSubCategory().getName(), p.getImageUrl());
 					customer.getCart().getProducts().add(p);
-					p.setQuantity(quantity);
-					customer.getCart().getCartProducts().add(p);
+					customer.getCart().getCartProducts().add(pd);
+					productRepo.save(p);
 					customerRepo.save(customer);
-					return p;
+					return pd;
 				}
 				throw new ProductException("only "+p.getQuantity()+" are left of "+p.getProductName());
 				
@@ -190,6 +199,7 @@ public class UserServiceImpl implements UserService {
 			throw new ProductException("No product present with the id "+productId);
 		}
 		throw new CustomerException("You are not logged in with the id "+loggedInId);
+//	return null;
 	}
 
 	public Product deleteProductFromCart(String productId, String loggedInId) throws ProductException, CustomerException
@@ -197,47 +207,59 @@ public class UserServiceImpl implements UserService {
 		
 		Optional<User> op = customerRepo.findById(loggedInId);
 		
-		if(op.get()!=null)
+		if(op.isPresent())
 		{
 			Optional<CustomerCurrentSession> op2 = userSessionRepo.findById(loggedInId);
-		    if(op2.get()!=null)
+		    if(op2.isPresent())
 		    {
 		    	User customer = op.get();
 		    	
 		    	List<Product> products = customer.getCart().getProducts();
+		    	List<ProductDTO> cartProducts = customer.getCart().getCartProducts(); 
 		    	Product ogp = productRepo.findById(productId).get();
 		    	Product res = null;
+		    	ProductDTO pd = cartProducts.stream().filter((product) -> product.getProductDtoId().equals(productId)).findAny().get();
+		    	if(pd == null)
+	    		{
+	    			throw new ProductException("No product present in the cart with id "+productId);
+	    		}
+	    		
+		    	
 		    	if(ogp!=null)
 		    	{
+		    		
 		    		for(Product p:products) 
 			    	{
-			    		if(p.getProductId() == ogp.getProductId()) 
+			    		if(p.getProductId().equals(ogp.getProductId())) 
 			    		{
-			    			ogp.setQuantity(ogp.getQuantity()+p.getQuantity());
+			    			ogp.setQuantity(ogp.getQuantity()+pd.getQuantity());
 			    			productRepo.save(ogp);
 			    			res = p;
 			    			products.remove(p);
-			    			break;
+			    			cartProducts.remove(pd);
+			    			productDtoRepo.delete(pd);
+			    			customerRepo.save(customer);
+			    			return res;   
 			    		}
 			    	}	
-		    		customer.getCart().setProducts(products);
-		    		customerRepo.save(customer);
-		    	return res;   
+		    		throw new ProductException("No product present in the cart with id "+productId);
 		    	}else {
 		    		
 		    		for(Product p:products) 
 		    		{
-		    			if(p.getProductId() == productId)
+		    			if(p.getProductId().equals(productId))
 		    			{
 		    				products.remove(p);
+		    				cartProducts.remove(pd);
 		    				productRepo.save(p);
 		    				res  = p;
-		    				break;
+		    				productDtoRepo.delete(pd);
+		    				customerRepo.save(customer);
+		    				return res;
+		    		
 		    			}
 		    		}
-		    		customer.getCart().setProducts(products);
-		    		customerRepo.save(customer);
-		        return res;
+		    		throw new ProductException("No product present with the id "+productId);
 		    	}
 		    	
 		    	
@@ -270,5 +292,31 @@ public class UserServiceImpl implements UserService {
 		
 		throw new CustomerException("User is not registered");
 		
+	}
+
+	@Override
+	public Order placeOrder(String loggedInId) throws CustomerException {
+		// TODO Auto-generated method stub
+		if(customerRepo.findById(loggedInId).isPresent())
+		{
+			if(userSessionRepo.findById(loggedInId).isPresent())
+			{
+				User customer = customerRepo.findById(loggedInId).get();
+				if(!customer.getCart().getCartProducts().isEmpty())
+				{
+					Order o = new Order(customer);
+				    List<Product> products = customer.getCart().getProducts();
+				    List<ProductDTO> cartProducts = customer.getCart().getCartProducts();
+				    cartProducts.stream().forEach(pd -> {productDtoRepo.delete(pd);});
+				    cartProducts.removeAll(cartProducts);
+				    products.removeAll(products);
+				    customerRepo.save(customer);
+				    orderRepo.save(o);
+				}
+				throw new CustomerException("No product is present in the cart");
+			}
+			throw new CustomerException("User is not logged in");
+		}
+		throw new CustomerException("Invalid customer");
 	}
 }

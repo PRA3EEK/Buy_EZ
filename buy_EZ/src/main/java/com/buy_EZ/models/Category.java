@@ -32,7 +32,7 @@ public class Category {
 	@OneToMany(mappedBy = "category")
 	private List<Product> products = new ArrayList<>();
 	
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "parentCategory")@JsonIgnore
 	private List<SubCategory> subCategories = new ArrayList<>(); 
 	
 //	public Category( @NotNull(message = "category name cannot be null")
