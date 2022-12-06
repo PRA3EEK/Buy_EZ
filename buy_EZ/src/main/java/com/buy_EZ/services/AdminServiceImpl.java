@@ -9,18 +9,28 @@ import org.springframework.stereotype.Service;
 
 import com.buy_EZ.exceptions.AdminException;
 import com.buy_EZ.exceptions.CategoryException;
+import com.buy_EZ.exceptions.OrderException;
 import com.buy_EZ.exceptions.ProductException;
 import com.buy_EZ.models.Admin;
 import com.buy_EZ.models.AdminCurrentSession;
 import com.buy_EZ.models.AdminDto;
 import com.buy_EZ.models.Category;
+import com.buy_EZ.models.Order;
+import com.buy_EZ.models.Payment;
 import com.buy_EZ.models.Product;
+import com.buy_EZ.models.Shipper;
 import com.buy_EZ.models.SubCategory;
+import com.buy_EZ.models.Supplier;
+import com.buy_EZ.models.User;
 import com.buy_EZ.repositories.AdminCurrentSessionRepo;
 import com.buy_EZ.repositories.AdminRepo;
 import com.buy_EZ.repositories.CategoryRepo;
+import com.buy_EZ.repositories.OrderRepo;
+import com.buy_EZ.repositories.PaymentRepo;
 import com.buy_EZ.repositories.ProductRepo;
+import com.buy_EZ.repositories.ShipperRepo;
 import com.buy_EZ.repositories.SubCategoryRepo;
+import com.buy_EZ.repositories.SupplierRepo;
 
 import net.bytebuddy.utility.RandomString;
 
@@ -43,6 +53,14 @@ public class AdminServiceImpl implements AdminService{
 	@Autowired
 	private SubCategoryRepo subCategoryRepo;
 	
+	@Autowired
+	private OrderRepo orderRepo;
+	@Autowired
+	private PaymentRepo paymentRepo;
+	@Autowired
+	private ShipperRepo shipperRepo;
+	@Autowired
+	private SupplierRepo supplierRepo;
 	@Override
 	public AdminDto insertAdmin(Admin admin, String loggedInAdminid) throws AdminException {
 		// TODO Auto-generated method stub
@@ -143,5 +161,52 @@ public class AdminServiceImpl implements AdminService{
      throw new AdminException("You are not logged in as an admin");	
 	}
 	
+	public User searchByOrder(String orderid, String loggedInAdminId) throws OrderException, AdminException{
+		
+		if(adminCurrentSession.findById(loggedInAdminId).isPresent())
+		{
+			Optional<Order> oo = orderRepo.findById(orderid);
+			
+			if(oo.isPresent())
+			{
+				Order o = oo.get();
+				return o.getUser();
+			}
+			throw new OrderException("No order has been placed with the order id "+orderid);			
+		}
+		throw new AdminException("You are no logged in as admin");
+	}
+
+	@Override
+	public Payment addPaymentType(Payment payment, String loggedInAdminId) throws AdminException {
+		// TODO Auto-generated method stub
+		
+		if(adminCurrentSession.findById(loggedInAdminId).isPresent())
+		{
+			return paymentRepo.save(payment);
+			
+		}
+		throw new AdminException("Admin is not loggedIn");
+	}
+
+	@Override
+	public Shipper addShipper(Shipper shipper, String loggedInAdminId) throws AdminException {
+		// TODO Auto-generated method stub
+		if(adminCurrentSession.findById(loggedInAdminId).isPresent())
+		{
+			return shipperRepo.save(shipper);
+			
+		}
+		throw new AdminException("Admin is not loggedIn");
+	}
 	
+	public Supplier addSupplier(Supplier supplier, String loggedInAdminId) throws AdminException
+	{
+		if(adminCurrentSession.findById(loggedInAdminId).isPresent())
+		{
+			return supplierRepo.save(supplier);
+			
+		}
+		throw new AdminException("Admin is not loggedIn");
+	}
 }

@@ -1,5 +1,6 @@
 package com.buy_EZ.models;
 
+import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PrimaryKeyJoinColumn;
@@ -13,11 +14,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "productDtoTable")
+@Embeddable
 public class ProductDTO {
 
-	@Id
+
 	private String productDtoId;
 	private String productName;
 	private Double price;

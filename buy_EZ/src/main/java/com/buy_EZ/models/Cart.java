@@ -29,7 +29,7 @@ public class Cart {
     private User customer;
 	@ManyToMany(fetch = FetchType.EAGER, targetEntity = Product.class)@JsonIgnore
 	private List<Product> products = new ArrayList<>();
-    @OneToMany(targetEntity = ProductDTO.class, cascade = CascadeType.ALL)
+    @ElementCollection
 	private List<ProductDTO> cartProducts = new ArrayList<>();
 	
 	

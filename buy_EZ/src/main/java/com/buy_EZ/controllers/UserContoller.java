@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.buy_EZ.exceptions.CategoryException;
 import com.buy_EZ.exceptions.CustomerException;
+import com.buy_EZ.exceptions.PaymentException;
 import com.buy_EZ.exceptions.ProductException;
 import com.buy_EZ.models.Cart;
+import com.buy_EZ.models.Order;
 import com.buy_EZ.models.Product;
 import com.buy_EZ.models.ProductDTO;
 import com.buy_EZ.repositories.ProductRepo;
@@ -83,5 +85,14 @@ public class UserContoller {
 	@GetMapping("/cart")
 	public ResponseEntity<Cart> getCartDetails(@RequestParam("loggedInId") String id) throws CustomerException{
 		return new ResponseEntity<Cart>(userService.getCartDetails(id), HttpStatus.OK);
+	}
+	
+	@PostMapping("/cart/order")
+	public ResponseEntity<Order> placeOrder(@RequestParam("loggedInId") String id, @RequestParam("paymentType") String paymentType) throws CustomerException, PaymentException{
+		return new ResponseEntity<Order>(userService.placeOrder(id, paymentType), HttpStatus.OK);
+	}
+	@GetMapping("order/products")
+	public ResponseEntity<List<ProductDTO>> getProductsFromOrder(@RequestParam("orderId") String orderId){
+		return new ResponseEntity<List<ProductDTO>>(userService.getProductsFromOrder(orderId), HttpStatus.OK);
 	}
 }

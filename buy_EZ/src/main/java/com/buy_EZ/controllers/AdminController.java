@@ -17,14 +17,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.buy_EZ.exceptions.AdminException;
 import com.buy_EZ.exceptions.CategoryException;
+import com.buy_EZ.exceptions.OrderException;
 import com.buy_EZ.exceptions.ProductException;
 import com.buy_EZ.models.Admin;
 import com.buy_EZ.models.AdminDto;
 import com.buy_EZ.models.Category;
+import com.buy_EZ.models.Payment;
 import com.buy_EZ.models.Product;
+import com.buy_EZ.models.Shipper;
 import com.buy_EZ.models.SubCategory;
+import com.buy_EZ.models.Supplier;
+import com.buy_EZ.models.User;
 import com.buy_EZ.repositories.AdminRepo;
 import com.buy_EZ.services.AdminService;
+import com.buy_EZ.services.UserService;
 
 import net.bytebuddy.utility.RandomString;
 
@@ -61,13 +67,30 @@ public class AdminController {
 	}
 
 	
-	@PostMapping("/subCategory")
+	@PostMapping("add/subCategory")
 	public ResponseEntity<SubCategory> insertSubCategory(@RequestBody SubCategory subCategory, @RequestParam("parentCategoryName") String name, @RequestParam("loggedInAdminId") String id) throws CategoryException, AdminException{
 		
 		return new ResponseEntity<SubCategory>(adminService.insertSubCategory(subCategory, name, id), HttpStatus.OK);
 		
 	}
+	@GetMapping("/order/customer")
+	public ResponseEntity<User> getCustomerByOrder(@RequestParam("orderId") String orderId, @RequestParam("loggedInAdminId") String adminId) throws OrderException, AdminException{
+		return new ResponseEntity<User>(adminService.searchByOrder(orderId, adminId), HttpStatus.OK);
+	}
 	
+	@PostMapping("add/payment")
+	public ResponseEntity<Payment> addPayment(@Valid@RequestBody Payment payment, @RequestParam("loggedInAdminId") String adminId) throws AdminException{
+		return new ResponseEntity<Payment>(adminService.addPaymentType(payment, adminId), HttpStatus.OK);
+	}
+	@PostMapping("add/shipper")
+	public ResponseEntity<Shipper> addShipper(@Valid@RequestBody Shipper shipper, @RequestParam("loggedInAdminId") String adminId) throws AdminException{
+		return new ResponseEntity<Shipper>(adminService.addShipper(shipper, adminId), HttpStatus.OK);
+	}
+	@PostMapping("add/supplier")
+	public ResponseEntity<Supplier> addSupplier(@Valid@RequestBody Supplier supplier, @RequestParam("loggedInAdminId") String adminId) throws AdminException
+	{
+		return new ResponseEntity<Supplier>(adminService.addSupplier(supplier, adminId), HttpStatus.OK);
+	}
 	@GetMapping("/msg")
 	public String message() {
 

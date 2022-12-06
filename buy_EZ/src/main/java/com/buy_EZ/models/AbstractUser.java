@@ -46,6 +46,8 @@ public class AbstractUser {
 	@Size(min = 7, message = "Length of the email must be greater than 7")
 	@Email
 	private String email;
-	
+	@NotNull
+	@NotBlank
+	private String country;
 	
 }

@@ -2,8 +2,10 @@ package com.buy_EZ.services;
 
 import java.util.List;
 
+import com.buy_EZ.exceptions.AdminException;
 import com.buy_EZ.exceptions.CategoryException;
 import com.buy_EZ.exceptions.CustomerException;
+import com.buy_EZ.exceptions.PaymentException;
 import com.buy_EZ.exceptions.ProductException;
 import com.buy_EZ.models.Cart;
 import com.buy_EZ.models.Order;
@@ -35,6 +37,8 @@ public interface UserService {
 	
 	public Cart getCartDetails(String loggedInId) throws CustomerException;
 	
-	public Order placeOrder(String loggedInId) throws CustomerException;
+	public Order placeOrder(String loggedInId, String paymentType) throws CustomerException, PaymentException;
+	
+	public List<ProductDTO> getProductsFromOrder(String orderId);
 	
 }
