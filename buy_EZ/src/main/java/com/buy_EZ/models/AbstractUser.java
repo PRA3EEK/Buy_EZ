@@ -1,5 +1,9 @@
 package com.buy_EZ.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.MappedSuperclass;
 import javax.validation.Valid;
@@ -25,6 +29,13 @@ public class AbstractUser {
 	@Size(min = 3, max = 20, message = "Length of the username cannot be less than 3 and greater than 20")
 	private String username;
 	
+	@NotNull
+	@NotBlank
+	private String firstName;
+	@NotNull
+	@NotBlank
+	private String lastName;
+	
 	@NotNull(message = "Password cannot be null")
 	@NotBlank(message = "Password cannot be empty")
 	@Size(min = 8, max = 16, message = "Password must of the length between 8 and 16")
@@ -49,5 +60,7 @@ public class AbstractUser {
 	@NotNull
 	@NotBlank
 	private String country;
+	@ElementCollection
+	List<String> role = new ArrayList<>(); 
 	
 }

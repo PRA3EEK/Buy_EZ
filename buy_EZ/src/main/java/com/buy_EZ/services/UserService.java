@@ -8,6 +8,7 @@ import com.buy_EZ.exceptions.CustomerException;
 import com.buy_EZ.exceptions.PaymentException;
 import com.buy_EZ.exceptions.ProductException;
 import com.buy_EZ.models.Cart;
+import com.buy_EZ.models.Category;
 import com.buy_EZ.models.Order;
 import com.buy_EZ.models.Product;
 import com.buy_EZ.models.ProductDTO;
@@ -40,5 +41,7 @@ public interface UserService {
 	public Order placeOrder(String loggedInId, String paymentType) throws CustomerException, PaymentException;
 	
 	public List<ProductDTO> getProductsFromOrder(String orderId);
+	
+	public List<Category> getAllCategories();
 	
 }

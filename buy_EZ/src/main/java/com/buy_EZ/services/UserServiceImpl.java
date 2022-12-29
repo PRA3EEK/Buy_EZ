@@ -196,10 +196,9 @@ public class UserServiceImpl implements UserService {
 				if (p.getQuantity() > quantity) {
 					p.setQuantity(p.getQuantity() - quantity);
 //					productRepo.save(p);
-					ProductDTO pd = new ProductDTO(p.getProductId(), p.getProductName(), p.getPrice(), p.getColor(),
+					ProductDTO pd = new ProductDTO(p.getProductId(), p.getProductName(), p.getMarket_price(), p.getSale_price(), p.getColor(),
 							p.getDimension(), p.getSpecification(), p.getManufacturer(), quantity, p.getRatings(),
-							p.getNumberOfRatings(), p.getCategory().getCategoryName(), p.getSubCategory().getName(),
-							p.getImageUrl());
+							p.getNumberOfRatings(), p.getCategory().getCategoryName(), p.getSubCategory().getName());
 					customer.getCart().getProducts().add(p);
 					customer.getCart().getCartProducts().add(pd);
 					productRepo.save(p);
@@ -382,4 +381,10 @@ public class UserServiceImpl implements UserService {
     public List<ProductDTO> getProductsFromOrder(String orderId){
     	return orderRepo.findById(orderId).get().getUserProducts();
     }
+
+	@Override
+	public List<Category> getAllCategories() {
+		// TODO Auto-generated method stub
+		return categoryRepo.findAll();
+	}
 }

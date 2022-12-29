@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import com.buy_EZ.exceptions.CustomerException;
 import com.buy_EZ.exceptions.PaymentException;
 import com.buy_EZ.exceptions.ProductException;
 import com.buy_EZ.models.Cart;
+import com.buy_EZ.models.Category;
 import com.buy_EZ.models.Order;
 import com.buy_EZ.models.Product;
 import com.buy_EZ.models.ProductDTO;
@@ -25,6 +27,7 @@ import com.buy_EZ.services.UserService;
 
 @RestController
 @RequestMapping("/user")
+@CrossOrigin(origins = "*")
 public class UserContoller {
 
 	@Autowired
@@ -94,5 +97,11 @@ public class UserContoller {
 	@GetMapping("order/products")
 	public ResponseEntity<List<ProductDTO>> getProductsFromOrder(@RequestParam("orderId") String orderId){
 		return new ResponseEntity<List<ProductDTO>>(userService.getProductsFromOrder(orderId), HttpStatus.OK);
+	}
+	
+	@GetMapping("/categories")
+	public ResponseEntity<List<Category>> getAllCategories()
+	{
+		return new ResponseEntity<List<Category>>(userService.getAllCategories(), HttpStatus.OK);
 	}
 }

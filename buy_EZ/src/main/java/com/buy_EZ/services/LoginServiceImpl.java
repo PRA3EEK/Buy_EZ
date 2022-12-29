@@ -107,9 +107,9 @@ Admin a = adminRepo.findByUsername(admin.getUsername());
 		// TODO Auto-generated method stub
 		
 		Optional<User> customerOptional = customerRepo.findById(customerDto.getId());
-		User customer = customerOptional.get();
-		if(customerOptional.get()!=null)
+		if(customerOptional.isPresent())
 		{
+			User customer = customerOptional.get();
 			if(customer.getUsername().equals(customerDto.getUsername()))
 			{
 				if(customer.getPassword().equals(customerDto.getPassword()))

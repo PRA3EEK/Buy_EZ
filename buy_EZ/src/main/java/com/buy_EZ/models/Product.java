@@ -3,6 +3,8 @@ package com.buy_EZ.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
@@ -28,7 +30,8 @@ public class Product {
 	@Id
 	private String productId;
 	private String productName;
-	private Double price;
+	private Double market_price;
+	private Double sale_price;
 	private String color;
 	private String dimension;
 	private String specification;
@@ -46,7 +49,8 @@ public class Product {
 	private Category category;
 	@ManyToMany(mappedBy = "products")
 	private List<Cart> carts = new ArrayList<>();
-	private String imageUrl;
+	@ElementCollection
+	private List<String> imageUrl = new ArrayList<>();
 	@ManyToOne
 //	@NotNull(message = "sub category must not be null")
 	private SubCategory subCategory;

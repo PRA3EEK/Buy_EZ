@@ -51,7 +51,7 @@ public class Order {
 		List<Product> products = customer.getCart().getProducts();
 		List<ProductDTO> cartProducts = customer.getCart().getCartProducts();
 		for(ProductDTO p:cartProducts) {
-			bill+=p.getPrice()*p.getQuantity();
+			bill+=p.getSale_price()*p.getQuantity();
 		}
 		this.shipDate = LocalDate.now().plusDays(1);
 		this.deliveryDate = LocalDate.now().plusDays(7);

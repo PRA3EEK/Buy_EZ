@@ -1,5 +1,9 @@
 package com.buy_EZ.models;
 
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -20,7 +24,8 @@ public class ProductDTO {
 
 	private String productDtoId;
 	private String productName;
-	private Double price;
+	private Double market_price;
+	private Double sale_price;
 	private String color;
 	private String dimension;
 	private String specification;
@@ -30,7 +35,7 @@ public class ProductDTO {
 	private Integer numberOfRatings;
 	private String categoryName;
 	private String subCategoryName;
-	private String imageUrl;
+	
 	
 	
 }
