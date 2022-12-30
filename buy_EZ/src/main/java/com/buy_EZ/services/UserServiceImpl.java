@@ -196,9 +196,7 @@ public class UserServiceImpl implements UserService {
 				if (p.getQuantity() > quantity) {
 					p.setQuantity(p.getQuantity() - quantity);
 //					productRepo.save(p);
-					ProductDTO pd = new ProductDTO(p.getProductId(), p.getProductName(), p.getMarket_price(), p.getSale_price(), p.getColor(),
-							p.getDimension(), p.getSpecification(), p.getManufacturer(), quantity, p.getRatings(),
-							p.getNumberOfRatings(), p.getCategory().getCategoryName(), p.getSubCategory().getName());
+					ProductDTO pd = new ProductDTO(p.getProductId(), quantity);
 					customer.getCart().getProducts().add(p);
 					customer.getCart().getCartProducts().add(pd);
 					productRepo.save(p);

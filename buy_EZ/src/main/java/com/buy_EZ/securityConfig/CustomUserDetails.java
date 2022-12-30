@@ -31,7 +31,9 @@ public class CustomUserDetails implements UserDetails{
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		// TODO Auto-generated method stub
 		List<GrantedAuthority> gratedAuthorities = new ArrayList<>();
+		System.out.println("error");
 		User user = userRepo.findById(currentSession.getId()).get();
+		System.out.println("no error");
 		for(String s:user.getRole())
 		{
 			SimpleGrantedAuthority sga = new SimpleGrantedAuthority(s);

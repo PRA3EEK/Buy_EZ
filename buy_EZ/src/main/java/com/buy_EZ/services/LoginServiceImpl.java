@@ -5,6 +5,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.buy_EZ.DTO.CustomerDto;
@@ -35,25 +40,27 @@ public class LoginServiceImpl implements LoginService{
 	private CustomerRepo customerRepo;
 	@Autowired
 	private CustomerCurrentSessionRepo customerCurrentSessionRepo;
-	
+
 	@Override
-	public AdminCurrentSession adminLogin(AdminDto admin) throws AdminException {
+	public CustomerCurrentSession adminLogin(AdminDto admin) throws AdminException {
 		// TODO Auto-generated method stub
 		
-Admin a = adminRepo.findByUsername(admin.getUsername());
+User a = customerRepo.findByUsername(admin.getUsername());
 		
 		if(a!=null) {
 			
 			
 			if(a.getPassword().equals(admin.getPassword())) {
 				
-				AdminCurrentSession acs =  adminCurrentSession.findByUsername(a.getUsername());
+				CustomerCurrentSession acs =  customerCurrentSessionRepo.findByUsername(a.getUsername());
 				if(acs == null) {
-					AdminCurrentSession ac = new AdminCurrentSession(a.getAdminId(), a.getUsername(), RandomString.make(6), LocalDateTime.now());
 					
-					adminCurrentSession.save(ac);
+						CustomerCurrentSession ac = new CustomerCurrentSession(a.getUserId(), a.getUsername(), new BCryptPasswordEncoder().encode(a.getPassword()), LocalDateTime.now());
+						
+						customerCurrentSessionRepo.save(ac);
+						
+						return ac;
 					
-					return ac;
 				}
 				
 				throw new AdminException("Admin is already logged in");
@@ -114,7 +121,7 @@ Admin a = adminRepo.findByUsername(admin.getUsername());
 			{
 				if(customer.getPassword().equals(customerDto.getPassword()))
 				{
-					CustomerCurrentSession ccs = new CustomerCurrentSession(customerDto.getId(), customerDto.getUsername(), customerDto.getPassword(), LocalDateTime.now());
+					CustomerCurrentSession ccs = new CustomerCurrentSession(customerDto.getId(), customerDto.getUsername(), new BCryptPasswordEncoder().encode(customerDto.getPassword()), LocalDateTime.now());
 					return customerCurrentSessionRepo.save(ccs);
 				}
 				throw new CustomerException("Password is not correct!");

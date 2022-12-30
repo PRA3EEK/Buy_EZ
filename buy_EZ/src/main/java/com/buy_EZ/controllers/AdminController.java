@@ -44,9 +44,9 @@ public class AdminController {
 	private AdminService adminService;
 
 	@PostMapping("/admin/{loggedInAdminId}")
-	public ResponseEntity<AdminDto> insertAdmin(@Valid @RequestBody Admin admin,
-			@PathVariable("loggedInAdminId") String adminId) throws AdminException {
-		return new ResponseEntity<AdminDto>(adminService.insertAdmin(admin, adminId), HttpStatus.OK);
+	public ResponseEntity<AdminDto> insertAdmin(/*@Valid @RequestBody Admin admin,
+			@PathVariable("loggedInAdminId") String adminId*/) throws AdminException {
+		return new ResponseEntity<AdminDto>(adminService.insertAdmin(/*admin, adminId*/), HttpStatus.OK);
 	}
 
 	@PostMapping("category/{loggedInAdminId}")

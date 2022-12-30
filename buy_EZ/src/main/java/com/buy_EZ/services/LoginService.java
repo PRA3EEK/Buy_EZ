@@ -11,7 +11,7 @@ import com.buy_EZ.models.User;
 
 public interface LoginService {
 
-	public AdminCurrentSession adminLogin (AdminDto adminDto) throws AdminException;
+	public CustomerCurrentSession adminLogin (AdminDto adminDto) throws AdminException;
 	
 	public AdminDto adminRegister(Admin admin) throws AdminException;
 	

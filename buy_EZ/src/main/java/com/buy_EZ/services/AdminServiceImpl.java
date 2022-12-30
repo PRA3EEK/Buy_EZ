@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.buy_EZ.exceptions.AdminException;
@@ -62,29 +63,32 @@ public class AdminServiceImpl implements AdminService{
 	@Autowired
 	private SupplierRepo supplierRepo;
 	@Override
-	public AdminDto insertAdmin(Admin admin, String loggedInAdminid) throws AdminException {
+	public AdminDto insertAdmin(/*Admin admin, String loggedInAdminid*/) throws AdminException {
 		// TODO Auto-generated method stub
 		//finding the current session of the admin who is trying to insert the new admin
-		Optional<AdminCurrentSession> session  = adminCurrentSession.findById(loggedInAdminid);
 		
-		if(session.get()!=null) {
-			
-			if(adminRepo.findByUsername(admin.getUsername())==null) {
-				admin.setAdminId(admin.getUsername()+"_"+RandomString.make(6));
-				
-				adminRepo.save(admin);
-				
-				AdminDto details = new AdminDto(admin.getAdminId(), admin.getUsername(), admin.getPassword()); 
-				
-				return details;
-			}
-			
-			throw new AdminException("An admin is already present with the username "+admin.getUsername());
-			
-		}else {
-			throw new AdminException("No admin is logged in with the id "+loggedInAdminid);
-		}
-		
+		String name = SecurityContextHolder.getContext().getAuthentication().getName();
+		System.out.println(name);
+//		Optional<AdminCurrentSession> session  = adminCurrentSession.findById(loggedInAdminid);
+//		
+//		if(session.get()!=null) {
+//			
+//			if(adminRepo.findByUsername(admin.getUsername())==null) {
+//				admin.setAdminId(admin.getUsername()+"_"+RandomString.make(6));
+//				
+//				adminRepo.save(admin);
+//				
+//				AdminDto details = new AdminDto(admin.getAdminId(), admin.getUsername(), admin.getPassword()); 
+//				
+//				return details;
+//			}
+//			
+//			throw new AdminException("An admin is already present with the username "+admin.getUsername());
+//			
+//		}else {
+//			throw new AdminException("No admin is logged in with the id "+loggedInAdminid);
+//		}
+		return null;
 	}
 
 	@Override

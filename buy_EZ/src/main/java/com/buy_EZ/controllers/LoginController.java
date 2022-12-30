@@ -36,8 +36,8 @@ public class LoginController {
 	
 	
 	@PostMapping("/admin")
-	public ResponseEntity<AdminCurrentSession> adminLogin( @RequestBody AdminDto admin) throws AdminException {
-		return new ResponseEntity<AdminCurrentSession>(loginService.adminLogin(admin), HttpStatus.OK);
+	public ResponseEntity<CustomerCurrentSession> adminLogin( @RequestBody AdminDto admin) throws AdminException {
+		return new ResponseEntity<CustomerCurrentSession>(loginService.adminLogin(admin), HttpStatus.OK);
 	}
 	
 	

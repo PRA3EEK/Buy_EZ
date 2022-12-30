@@ -20,22 +20,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Embeddable
 public class ProductDTO {
-
-
 	private String productDtoId;
-	private String productName;
-	private Double market_price;
-	private Double sale_price;
-	private String color;
-	private String dimension;
-	private String specification;
-	private String manufacturer;
 	private Integer quantity;
-	private Double ratings;
-	private Integer numberOfRatings;
-	private String categoryName;
-	private String subCategoryName;
-	
-	
-	
 }

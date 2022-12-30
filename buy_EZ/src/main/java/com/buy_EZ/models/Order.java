@@ -14,6 +14,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.buy_EZ.repositories.ProductRepo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -50,8 +53,10 @@ public class Order {
 		double bill = 0;
 		List<Product> products = customer.getCart().getProducts();
 		List<ProductDTO> cartProducts = customer.getCart().getCartProducts();
+		int ind = 0;
 		for(ProductDTO p:cartProducts) {
-			bill+=p.getSale_price()*p.getQuantity();
+			bill+=products.get(ind).getSale_price()*p.getQuantity();
+			ind++;
 		}
 		this.shipDate = LocalDate.now().plusDays(1);
 		this.deliveryDate = LocalDate.now().plusDays(7);
