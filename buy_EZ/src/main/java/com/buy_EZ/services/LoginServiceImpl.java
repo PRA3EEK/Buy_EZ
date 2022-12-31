@@ -2,6 +2,7 @@ package com.buy_EZ.services;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +81,8 @@ User a = customerRepo.findByUsername(admin.getUsername());
 		User u = customerRepo.findByUsername(customer.getUsername());
 		if(u==null)
 		{
+			
+			
 			customer.setUserId("cu"+"_"+RandomString.make(10));
 			Cart c = new Cart(customer);
 			customer.setCart(c);

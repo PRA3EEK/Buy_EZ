@@ -5,12 +5,15 @@ import java.util.List;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
+import javax.persistence.FetchType;
 import javax.persistence.MappedSuperclass;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import org.hibernate.annotations.Fetch;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -60,7 +63,6 @@ public class AbstractUser {
 	@NotNull
 	@NotBlank
 	private String country;
-	@ElementCollection
-	List<String> role = new ArrayList<>(); 
+
 	
 }

@@ -3,6 +3,7 @@ package com.buy_EZ.securityConfig;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,34 +13,47 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.buy_EZ.models.CustomerCurrentSession;
 import com.buy_EZ.models.User;
 import com.buy_EZ.repositories.CustomerRepo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class CustomUserDetails implements UserDetails{
 
 
 	private static final long serialVersionUID = 1L;
 
-	@Autowired
-	private CustomerCurrentSession currentSession;
-	@Autowired
-	private CustomerRepo userRepo;
+	private String id;
 	
-	public CustomUserDetails(CustomerCurrentSession currentSession)
+	private String username;
+	
+	private String email;
+	@JsonIgnore
+	private String password;
+	
+	private Collection<? extends GrantedAuthority> authorities;
+	private CustomerCurrentSession currentSession;
+	
+	public CustomUserDetails(String id, String username, String email, String password, Collection<? extends GrantedAuthority> authorities)
 	{
-		this.currentSession = currentSession;
+		this.id = id;
+		this.username = username;
+		this.email = email;
+		this.password = password;
+		this.authorities = authorities;
 	}
+	
+	public static CustomUserDetails build(User user)
+	{
+		
+		List<GrantedAuthority> authorities = user.getRoles().stream()
+				.map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                .collect(Collectors.toList());
+		
+		return new CustomUserDetails(user.getUserId(), user.getUsername(), user.getPassword(), user.getEmail(), authorities);
+	}
+	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		// TODO Auto-generated method stub
-		List<GrantedAuthority> gratedAuthorities = new ArrayList<>();
-		System.out.println("error");
-		User user = userRepo.findById(currentSession.getId()).get();
-		System.out.println("no error");
-		for(String s:user.getRole())
-		{
-			SimpleGrantedAuthority sga = new SimpleGrantedAuthority(s);
-			gratedAuthorities.add(sga);
-		}
-		return gratedAuthorities;
+		return authorities;
 	}
 
 	@Override
