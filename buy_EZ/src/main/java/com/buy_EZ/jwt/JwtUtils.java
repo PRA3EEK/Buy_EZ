@@ -30,7 +30,7 @@ public class JwtUtils {
 	  private String jwtSecret;
 	  @Value("${buy_EZ.jwtExpirationMS}")
 	  private int jwtExpirationMS;
-	  @Value("${buy_EZ.jwtExpirationMS}")
+	  @Value("${buy_EZ.jwtCookieName}")
 	  private String jwtCookie;
 	  
 	  public String getJwtFromCookie(HttpServletRequest http)
@@ -51,7 +51,7 @@ public class JwtUtils {
 	  
 	  public ResponseCookie getCleanJwtCookie()
 	  {
-		  ResponseCookie cookie = ResponseCookie.from(jwtSecret, null).path("/buy_EZ").build();
+		  ResponseCookie cookie = ResponseCookie.from(jwtCookie, null).path("/buy_EZ").build();
 		  return cookie;
 	  }
 	  

@@ -3,6 +3,7 @@ package com.buy_EZ.securityConfig;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,8 @@ public class CustomUserDetails implements UserDetails{
 	private String password;
 	
 	private Collection<? extends GrantedAuthority> authorities;
-	private CustomerCurrentSession currentSession;
+
+	
 	
 	public CustomUserDetails(String id, String username, String email, String password, Collection<? extends GrantedAuthority> authorities)
 	{
@@ -47,7 +49,8 @@ public class CustomUserDetails implements UserDetails{
 				.map(role -> new SimpleGrantedAuthority(role.getName().name()))
                 .collect(Collectors.toList());
 		
-		return new CustomUserDetails(user.getUserId(), user.getUsername(), user.getPassword(), user.getEmail(), authorities);
+		
+		return new CustomUserDetails(user.getUserId(), user.getUsername(), user.getEmail(), user.getPassword(), authorities);
 	}
 	
 	@Override
@@ -59,13 +62,13 @@ public class CustomUserDetails implements UserDetails{
 	@Override
 	public String getPassword() {
 		// TODO Auto-generated method stub
-		return currentSession.getPassword();
+		return password;
 	}
 
 	@Override
 	public String getUsername() {
 		// TODO Auto-generated method stub
-		return currentSession.getUsername();
+		return username;
 	}
 
 	@Override
@@ -91,5 +94,15 @@ public class CustomUserDetails implements UserDetails{
 		// TODO Auto-generated method stub
 		return true;
 	}
+	
+	@Override
+	  public boolean equals(Object o) {
+	    if (this == o)
+	      return true;
+	    if (o == null || getClass() != o.getClass())
+	      return false;
+	    CustomUserDetails user = (CustomUserDetails) o;
+	    return Objects.equals(id, user.id);
+	  }
 
 }

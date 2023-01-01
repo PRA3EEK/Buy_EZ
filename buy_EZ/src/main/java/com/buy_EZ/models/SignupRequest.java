@@ -1,32 +1,20 @@
 package com.buy_EZ.models;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
-import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
-import javax.persistence.FetchType;
-import javax.persistence.MappedSuperclass;
-import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.hibernate.annotations.Fetch;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+@Data@AllArgsConstructor@NoArgsConstructor
+public class SignupRequest {
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Valid
-@MappedSuperclass
-public class AbstractUser {
-   
-	
 	@NotNull(message = "Username cannot be null")
 	@NotBlank(message = "Username cannot be empty")
 	@Size(min = 3, max = 20, message = "Length of the username cannot be less than 3 and greater than 20")
@@ -41,6 +29,7 @@ public class AbstractUser {
 	
 	@NotNull(message = "Password cannot be null")
 	@NotBlank(message = "Password cannot be empty")
+	@Size(min = 8, max = 16, message = "Password must of the length between 8 and 16")
 	private String password;
 	
 	@NotNull(message = "Address cannot be null")
@@ -62,6 +51,7 @@ public class AbstractUser {
 	@NotNull
 	@NotBlank
 	private String country;
-
+	@NotNull
+	private Set<String> roles;
 	
 }
