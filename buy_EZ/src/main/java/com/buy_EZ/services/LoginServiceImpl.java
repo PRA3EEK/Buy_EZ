@@ -8,12 +8,17 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -119,7 +124,7 @@ User a = customerRepo.findByUsername(admin.getUsername());
             Set<Role> roles = new HashSet<>();
             
             
-            if(strRoles.isEmpty())
+            if(strRoles == null || strRoles.isEmpty())
             {
             	Role userRole = roleRepo.findByName(ERole.ROLE_USER)
             	.orElseThrow(() -> new RoleException("No role found."));
@@ -176,7 +181,7 @@ User a = customerRepo.findByUsername(admin.getUsername());
 
 
 	@Override
-	public Object[] customerLogin(CustomerDto customerDto) throws CustomerException {
+	public Object[] customerLogin(CustomerDto customerDto, HttpServletRequest request) throws CustomerException {
 		
 		// TODO Auto-generated method stub
 		
@@ -188,16 +193,41 @@ User a = customerRepo.findByUsername(admin.getUsername());
 				
 			
 				Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(customerDto.getUsername(), customerDto.getPassword()));
-				SecurityContextHolder.getContext().setAuthentication(authentication);
+				
+				SecurityContext context = SecurityContextHolder.getContext();
+						context.setAuthentication(authentication);
+				
 				   CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
 				   ResponseCookie cookie = jwtUtils
 						   .generateJwtCookie(userDetails);
+				   
+				   HttpSession session = request.getSession(true);
+				   session.setAttribute("SPRING_SECURITY_CONTEXT", context);
+		
 				   CustomerCurrentSession newSession = new CustomerCurrentSession(customerDto.getId(), customerDto.getUsername(), customerDto.getPassword(), LocalDateTime.now());
 				   customerCurrentSessionRepo.save(newSession);
+				  
 				   return new Object[] {cookie, customerOptional.get(), userDetails.getAuthorities()};
 			}
 		   throw new CustomerException("You are already loggedIn");
 		}
 		throw new CustomerException("No customer present with the id "+customerDto.getId());
+	}
+
+
+
+	@Override
+	public ResponseCookie logout(String token) throws CustomerException {
+//		 TODO Auto-generated method stub  
+		String username = jwtUtils.getUsernameFromJwtToken(token);
+		CustomerCurrentSession availableSession =  customerCurrentSessionRepo.findByUsername(username);
+		if(availableSession!=null)
+		{
+		     customerCurrentSessionRepo.delete(availableSession);
+		     ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
+		     return cookie;
+		}
+
+		throw new CustomerException("Customer is not logged In");
 	}
 }

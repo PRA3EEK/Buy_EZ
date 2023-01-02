@@ -22,8 +22,6 @@ import com.buy_EZ.jwt.AuthEntryPointJwt;
 import com.buy_EZ.jwt.AuthTokenFilter;
 
 @Configuration
-@EnableGlobalMethodSecurity(
-	    prePostEnabled = true)
 public class ConfigClass{
 
 	@Autowired
@@ -31,11 +29,10 @@ public class ConfigClass{
 	@Autowired
 	private AuthEntryPointJwt unauthorizedHandler;
 	
-	@Bean
-	   AuthTokenFilter authenticationJwtTokenFilter() {
-	    return new AuthTokenFilter();
-	  }
+	@Autowired
+	private AuthTokenFilter authTokenFilter;
 	
+
 
 	@Bean
 	   DaoAuthenticationProvider authenticationProvider() {
@@ -64,12 +61,13 @@ public class ConfigClass{
 			auth.
 			antMatchers("/login/customer/login").permitAll()
 			.antMatchers("/admin/admin/{loggedInAdminId}").hasAuthority("admin")
+			
 		       
 			
 		).csrf().disable().httpBasic();
 		
 		http.authenticationProvider(authenticationProvider());
-		http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+		http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
 		
 		return http.build();
 	}

@@ -2,6 +2,7 @@ package com.buy_EZ.models;
 
 import java.util.List;
 
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.GrantedAuthority;
 
 import lombok.AllArgsConstructor;
@@ -14,5 +15,6 @@ public class UserResponse {
 	private String username;
 	private String email;
 	private List<GrantedAuthority> roles;
+	private String jwtToken;
 	
 }

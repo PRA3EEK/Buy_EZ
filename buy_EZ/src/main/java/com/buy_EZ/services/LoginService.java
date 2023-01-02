@@ -1,5 +1,7 @@
 package com.buy_EZ.services;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.http.ResponseCookie;
 
 import com.buy_EZ.DTO.CustomerDto;
@@ -21,6 +23,8 @@ public interface LoginService {
 	
 	public CustomerDto customerRegister(SignupRequest request) throws CustomerException, RoleException;
 	
-	public Object[] customerLogin(CustomerDto customerDto) throws CustomerException;
+	public Object[] customerLogin(CustomerDto customerDto, HttpServletRequest request) throws CustomerException;
+	
+	public ResponseCookie logout(String token) throws CustomerException;
 	
 }
