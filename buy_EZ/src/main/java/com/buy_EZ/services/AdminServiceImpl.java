@@ -1,7 +1,9 @@
 package com.buy_EZ.services;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +14,17 @@ import com.buy_EZ.exceptions.AdminException;
 import com.buy_EZ.exceptions.CategoryException;
 import com.buy_EZ.exceptions.OrderException;
 import com.buy_EZ.exceptions.ProductException;
+import com.buy_EZ.exceptions.RoleException;
 import com.buy_EZ.models.Admin;
 import com.buy_EZ.models.AdminCurrentSession;
 import com.buy_EZ.models.AdminDto;
 import com.buy_EZ.models.Category;
+import com.buy_EZ.models.CustomerCurrentSession;
+import com.buy_EZ.models.ERole;
 import com.buy_EZ.models.Order;
 import com.buy_EZ.models.Payment;
 import com.buy_EZ.models.Product;
+import com.buy_EZ.models.Role;
 import com.buy_EZ.models.Shipper;
 import com.buy_EZ.models.SubCategory;
 import com.buy_EZ.models.Supplier;
@@ -26,9 +32,12 @@ import com.buy_EZ.models.User;
 import com.buy_EZ.repositories.AdminCurrentSessionRepo;
 import com.buy_EZ.repositories.AdminRepo;
 import com.buy_EZ.repositories.CategoryRepo;
+import com.buy_EZ.repositories.CustomerCurrentSessionRepo;
+import com.buy_EZ.repositories.CustomerRepo;
 import com.buy_EZ.repositories.OrderRepo;
 import com.buy_EZ.repositories.PaymentRepo;
 import com.buy_EZ.repositories.ProductRepo;
+import com.buy_EZ.repositories.RoleRepo;
 import com.buy_EZ.repositories.ShipperRepo;
 import com.buy_EZ.repositories.SubCategoryRepo;
 import com.buy_EZ.repositories.SupplierRepo;
@@ -62,33 +71,45 @@ public class AdminServiceImpl implements AdminService{
 	private ShipperRepo shipperRepo;
 	@Autowired
 	private SupplierRepo supplierRepo;
+     @Autowired
+	private CustomerCurrentSessionRepo userSession;
+     @Autowired
+     private CustomerRepo userRepo;
+     @Autowired
+     private RoleRepo roleRepo;
 	@Override
-	public AdminDto insertAdmin(/*Admin admin, String loggedInAdminid*/) throws AdminException {
+	public AdminDto insertAdmin(User admin) throws AdminException {
 		// TODO Auto-generated method stub
 		//finding the current session of the admin who is trying to insert the new admin
 		
 		String name = SecurityContextHolder.getContext().getAuthentication().getName();
-		System.out.println(name);
-//		Optional<AdminCurrentSession> session  = adminCurrentSession.findById(loggedInAdminid);
-//		
-//		if(session.get()!=null) {
-//			
-//			if(adminRepo.findByUsername(admin.getUsername())==null) {
-//				admin.setAdminId(admin.getUsername()+"_"+RandomString.make(6));
-//				
-//				adminRepo.save(admin);
-//				
-//				AdminDto details = new AdminDto(admin.getAdminId(), admin.getUsername(), admin.getPassword()); 
-//				
-//				return details;
-//			}
-//			
-//			throw new AdminException("An admin is already present with the username "+admin.getUsername());
-//			
-//		}else {
-//			throw new AdminException("No admin is logged in with the id "+loggedInAdminid);
-//		}
-		return null;
+		CustomerCurrentSession session =  userSession.findByUsername(name);
+        
+		
+		if(session!=null) {
+			
+			if(userRepo.findByUsername(admin.getUsername())==null) {
+				admin.setUserId("ad/cu"+"_"+RandomString.make(10));
+				Set<Role> adminRoles = new HashSet<>();
+				Role userRole = roleRepo.findByName(ERole.ROLE_USER).orElseThrow(() -> new RoleException("User Role not found"));
+				Role adminRole = roleRepo.findByName(ERole.ROLE_ADMIN).orElseThrow(() -> new RoleException("Admin Role not found"));
+				
+				adminRoles.add(userRole);
+				adminRoles.add(adminRole);
+				
+				admin.setRoles(adminRoles);
+				
+				AdminDto details = new AdminDto(admin.getUserId(), admin.getUsername(), admin.getPassword()); 
+				userRepo.save(admin);
+				return details;
+			}
+			
+			throw new AdminException("An admin is already present with the username "+admin.getUsername());
+			
+		}else {
+			throw new AdminException(name+" is not an authorized admin");
+		}
+
 	}
 
 	@Override

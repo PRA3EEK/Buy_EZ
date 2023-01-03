@@ -23,8 +23,8 @@ public interface LoginService {
 	
 	public CustomerDto customerRegister(SignupRequest request) throws CustomerException, RoleException;
 	
-	public Object[] customerLogin(CustomerDto customerDto, HttpServletRequest request) throws CustomerException;
+	public Object[] customerLogin(CustomerDto customerDto) throws CustomerException;
 	
-	public ResponseCookie logout(String token) throws CustomerException;
+	public ResponseCookie logout() throws CustomerException;
 	
 }

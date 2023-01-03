@@ -22,10 +22,12 @@ import com.buy_EZ.jwt.AuthEntryPointJwt;
 import com.buy_EZ.jwt.AuthTokenFilter;
 
 @Configuration
+@EnableGlobalMethodSecurity(
+	    prePostEnabled = true)
 public class ConfigClass{
 
 	@Autowired
-	private CustomeUserDetailService userDetailsService;
+	private CustomUserDetailService userDetailsService;
 	@Autowired
 	private AuthEntryPointJwt unauthorizedHandler;
 	
@@ -53,18 +55,18 @@ public class ConfigClass{
 	@Bean
 	SecurityFilterChain httpRequestHandling(HttpSecurity http) throws Exception
 	{
-		http.cors().disable().exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
+		http.cors().and().csrf().disable()
+		.exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
 	    .and()
 	    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-		.authorizeHttpRequests((auth) -> 
+		.authorizeHttpRequests()
         
-			auth.
-			antMatchers("/login/customer/login").permitAll()
-			.antMatchers("/admin/admin/{loggedInAdminId}").hasAuthority("admin")
 			
-		       
+			.antMatchers("/buy_EZ/auth/login").permitAll()
+			.anyRequest().authenticated();
+
 			
-		).csrf().disable().httpBasic();
+		  
 		
 		http.authenticationProvider(authenticationProvider());
 		http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);

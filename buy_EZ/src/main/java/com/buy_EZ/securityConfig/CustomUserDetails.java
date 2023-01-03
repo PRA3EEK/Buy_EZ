@@ -17,10 +17,12 @@ import com.buy_EZ.models.User;
 import com.buy_EZ.repositories.CustomerRepo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Component
 @NoArgsConstructor
+@Data
 public class CustomUserDetails implements UserDetails{
 
 

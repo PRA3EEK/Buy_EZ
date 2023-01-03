@@ -16,7 +16,7 @@ import com.buy_EZ.models.User;
 
 public interface AdminService {
 
-	public AdminDto insertAdmin(/*Admin admin, String loggedInAdminid*/) throws AdminException;
+	public AdminDto insertAdmin(User admin) throws AdminException;
 	
 	public Category insertCategory(Category category, String loggedInAdminId) throws AdminException, CategoryException;
 	

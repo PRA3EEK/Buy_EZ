@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
@@ -44,8 +45,8 @@ public class JwtUtils {
 	  
 	  public ResponseCookie generateJwtCookie(CustomUserDetails userDetails) {
 		  
-		  String jwt = generateTokenFromUsername(userDetails.getUsername());
-		  ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt).path("/buy_EZ").maxAge(24 * 60 * 60).httpOnly(true).build();
+		  String jwt = generateJwtToken(userDetails.getUsername());
+		  ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt).path("/buy_EZ").maxAge(24 * 60 * 60).httpOnly(false).build();
 		  return cookie;
 	  }
 	  
@@ -84,7 +85,7 @@ public class JwtUtils {
 		  
 	  }
 	  
-	  public String generateTokenFromUsername(String username)
+	  public String generateJwtToken(String username)
 	  {
 		  
 		  return Jwts.builder()
@@ -95,5 +96,17 @@ public class JwtUtils {
 				  .compact();
 		  
 	  }
+	  
+//	  public String generateJwtToken(Authentication authentication)
+//	  {
+//		  CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
+//		  
+//		  return Jwts.builder()
+//				  .setSubject(userDetails.getUsername())
+//				  .setIssuedAt(new Date())
+//				  .setExpiration(new Date((new Date()).getTime() + jwtExpirationMS))
+//				  .signWith(SignatureAlgorithm.HS256, jwtSecret)
+//				  .compact();
+//	  }
 	  
 }

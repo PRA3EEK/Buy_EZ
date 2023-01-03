@@ -13,6 +13,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.security.core.context.SecurityContext;
@@ -31,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.buy_EZ.DTO.CustomerDto;
 import com.buy_EZ.exceptions.AdminException;
 import com.buy_EZ.exceptions.CustomerException;
+import com.buy_EZ.jwt.JwtUtils;
 import com.buy_EZ.models.Admin;
 import com.buy_EZ.models.AdminCurrentSession;
 import com.buy_EZ.models.AdminDto;
@@ -46,7 +49,7 @@ import com.buy_EZ.services.LoginServiceImpl;
 import net.bytebuddy.utility.RandomString;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/buy_EZ/auth")
 @CrossOrigin(origins = "*")
 public class LoginController {
 
@@ -54,6 +57,9 @@ public class LoginController {
 	private LoginService loginService;
 	@Autowired
 	private PasswordEncoder encoder;
+	
+	@Autowired
+	private JwtUtils jwtUtils;
 	
 	
 	@PostMapping("/admin")
@@ -70,9 +76,9 @@ public class LoginController {
 	
 	
 	@PostMapping("/login")
-	public ResponseEntity<?> loginCustomer(@Valid @RequestBody CustomerDto customerDto, HttpServletRequest request) throws CustomerException{
+	public ResponseEntity<?> loginCustomer(@Valid @RequestBody CustomerDto customerDto) throws CustomerException{
 
-		Object[] result = loginService.customerLogin(customerDto, request);
+		Object[] result = loginService.customerLogin(customerDto);
 		User u = (User)result[1];
 		List<GrantedAuthority> roles = (List<GrantedAuthority>)result[2];
 		
@@ -86,15 +92,18 @@ public class LoginController {
 	}
 	
 	@DeleteMapping("/logout")
-	public ResponseEntity<?> userLogout(@RequestParam("token") String token) throws CustomerException
+	public ResponseEntity<?> userLogout() throws CustomerException
 	{	
-		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, loginService.logout(token).toString()).body("User loggedOut succesfully");
-		
+      
+//		System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, loginService.logout().toString()).body("User loggedOut succesfully");
+	
 	}
 	
 	@GetMapping("/getName")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String method() {
-		return SecurityContextHolder.getContext().getAuthentication().getName();
+       return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
 	}
 	
 }

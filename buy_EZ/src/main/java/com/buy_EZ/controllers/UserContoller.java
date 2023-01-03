@@ -26,7 +26,7 @@ import com.buy_EZ.repositories.ProductRepo;
 import com.buy_EZ.services.UserService;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/buy_EZ/user")
 @CrossOrigin(origins = "*")
 public class UserContoller {
 

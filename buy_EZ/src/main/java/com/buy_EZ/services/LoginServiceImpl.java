@@ -181,7 +181,7 @@ User a = customerRepo.findByUsername(admin.getUsername());
 
 
 	@Override
-	public Object[] customerLogin(CustomerDto customerDto, HttpServletRequest request) throws CustomerException {
+	public Object[] customerLogin(CustomerDto customerDto) throws CustomerException {
 		
 		// TODO Auto-generated method stub
 		
@@ -200,9 +200,7 @@ User a = customerRepo.findByUsername(admin.getUsername());
 				   CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
 				   ResponseCookie cookie = jwtUtils
 						   .generateJwtCookie(userDetails);
-				   
-				   HttpSession session = request.getSession(true);
-				   session.setAttribute("SPRING_SECURITY_CONTEXT", context);
+	
 		
 				   CustomerCurrentSession newSession = new CustomerCurrentSession(customerDto.getId(), customerDto.getUsername(), customerDto.getPassword(), LocalDateTime.now());
 				   customerCurrentSessionRepo.save(newSession);
@@ -217,9 +215,10 @@ User a = customerRepo.findByUsername(admin.getUsername());
 
 
 	@Override
-	public ResponseCookie logout(String token) throws CustomerException {
+	public ResponseCookie logout() throws CustomerException {
 //		 TODO Auto-generated method stub  
-		String username = jwtUtils.getUsernameFromJwtToken(token);
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+		System.out.println(username);
 		CustomerCurrentSession availableSession =  customerCurrentSessionRepo.findByUsername(username);
 		if(availableSession!=null)
 		{
