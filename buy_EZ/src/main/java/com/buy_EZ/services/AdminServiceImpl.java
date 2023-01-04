@@ -8,13 +8,17 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.buy_EZ.exceptions.AdminException;
 import com.buy_EZ.exceptions.CategoryException;
 import com.buy_EZ.exceptions.OrderException;
+import com.buy_EZ.exceptions.PaymentException;
 import com.buy_EZ.exceptions.ProductException;
 import com.buy_EZ.exceptions.RoleException;
+import com.buy_EZ.exceptions.ShipperException;
+import com.buy_EZ.exceptions.SupplierException;
 import com.buy_EZ.models.Admin;
 import com.buy_EZ.models.AdminCurrentSession;
 import com.buy_EZ.models.AdminDto;
@@ -89,14 +93,14 @@ public class AdminServiceImpl implements AdminService{
 		if(session!=null) {
 			
 			if(userRepo.findByUsername(admin.getUsername())==null) {
-				admin.setUserId("ad/cu"+"_"+RandomString.make(10));
+				admin.setUserId("ad-cu"+"_"+RandomString.make(10));
 				Set<Role> adminRoles = new HashSet<>();
 				Role userRole = roleRepo.findByName(ERole.ROLE_USER).orElseThrow(() -> new RoleException("User Role not found"));
 				Role adminRole = roleRepo.findByName(ERole.ROLE_ADMIN).orElseThrow(() -> new RoleException("Admin Role not found"));
 				
 				adminRoles.add(userRole);
 				adminRoles.add(adminRole);
-				
+				admin.setPassword(new BCryptPasswordEncoder().encode(admin.getPassword()));
 				admin.setRoles(adminRoles);
 				
 				AdminDto details = new AdminDto(admin.getUserId(), admin.getUsername(), admin.getPassword()); 
@@ -113,41 +117,36 @@ public class AdminServiceImpl implements AdminService{
 	}
 
 	@Override
-	public Category insertCategory(Category category, String loggedInAdminId) throws AdminException, CategoryException {
+	public Category insertCategory(Category category) throws AdminException, CategoryException {
 		// TODO Auto-generated method stub
 		if(categoryRepo.findByCategoryName(category.getCategoryName())==null) {
-			if(adminCurrentSession.findById(loggedInAdminId).get()!=null) {
 				category.setCategoryId(category.getCategoryName().split(" ")[0]+"_"+RandomString.make(7));
 				return categoryRepo.save(category);	
-			}
-	    	throw new AdminException("No admin is logged in with the id "+loggedInAdminId);	
-		}
+			}	
+		
 		throw new CategoryException("A category is already present with the name "+category.getCategoryName());
 	}
 
 	@Override
-	public Product insertProduct(Product product,String categoryName, String subCategoryName, String loggedInAdminId) throws AdminException, ProductException, CategoryException {
+	public Product insertProduct(Product product, String categoryName) throws AdminException, ProductException, CategoryException {
 		// TODO Auto-generated method stub
-		if(adminCurrentSession.findById(loggedInAdminId).get()!=null) 
+		
+		List<Product> products = productRepo.findAll();
+		
+		for(Product p:products)
 		{
-			
-			if(categoryRepo.findByCategoryName(categoryName)!=null) 
+			if(p.getProductName().equals(product.getProductName()) && p.getColor().equals(product.getColor()) && p.getDimension().equals(product.getDimension()) && p.getSpecification().equals(product.getSpecification()))
 			{
-				if(subCategoryRepo.findByName(subCategoryName)!=null)
+				throw new ProductException("product is already present");
+			}
+		}
+				if(subCategoryRepo.findByName(categoryName)!=null)
 				{
-					List<Product> products = productRepo.findAll();
 					
-					for(Product p:products)
-					{
-						if(p.getProductName().equals(product.getProductName()) && p.getColor().equals(product.getColor()) && p.getDimension().equals(product.getDimension()) && p.getSpecification().equals(product.getSpecification()))
-						{
-							throw new ProductException("product is already present");
-						}
-					}
-						Category c = categoryRepo.findByCategoryName(categoryName);
-							SubCategory sc = subCategoryRepo.findByName(subCategoryName);
+					SubCategory sc = subCategoryRepo.findByName(categoryName);
+						Category c = sc.getParentCategory();
 								
-								c.getProducts().add(product);
+
 								sc.getProducts().add(product);
 								product.setCategory(c);
 								product.setSubCategory(sc);
@@ -157,18 +156,23 @@ public class AdminServiceImpl implements AdminService{
 								return productRepo.save(product);
 						
 					
+				}else
+				{
+					Category c = categoryRepo.findByCategoryName(categoryName);
+					if(c!=null)
+					{
+						product.setCategory(c);
+						c.getProducts().add(product);
+						return productRepo.save(product);
+					}
+					throw new CategoryException("No category or sub category found with the name "+categoryName);
 				}
-				throw new CategoryException("No sub category is present with the name "+subCategoryName);
-			}
-			throw new CategoryException("No categroy present with the name "+categoryName);
-		}
-		throw new AdminException("No admin is logged in with the id "+loggedInAdminId);
+			
 	}
 
-	public SubCategory insertSubCategory(SubCategory subCategory, String parentCategoryName, String loggedInAdminId) throws CategoryException, AdminException{
+	public SubCategory insertSubCategory(SubCategory subCategory, String parentCategoryName) throws CategoryException, AdminException{
 		
-		if(adminCurrentSession.findById(loggedInAdminId).get()!=null)
-		{
+		
 			if(categoryRepo.findByCategoryName(parentCategoryName)!=null)
 			{
 				if(subCategoryRepo.findByName(subCategory.getName())==null)
@@ -182,8 +186,6 @@ public class AdminServiceImpl implements AdminService{
 				throw new CategoryException("sub category is already present with the name "+subCategory.getName());
 			}
 			throw new CategoryException("No category is present with the name "+parentCategoryName);
-		}
-     throw new AdminException("You are not logged in as an admin");	
 	}
 	
 	public User searchByOrder(String orderid, String loggedInAdminId) throws OrderException, AdminException{
@@ -203,35 +205,28 @@ public class AdminServiceImpl implements AdminService{
 	}
 
 	@Override
-	public Payment addPaymentType(Payment payment, String loggedInAdminId) throws AdminException {
+	public Payment addPaymentType(Payment payment) throws AdminException, PaymentException {
 		// TODO Auto-generated method stub
-		
-		if(adminCurrentSession.findById(loggedInAdminId).isPresent())
-		{
+		if(paymentRepo.findByType(payment.getType()) == null)
 			return paymentRepo.save(payment);
-			
-		}
-		throw new AdminException("Admin is not loggedIn");
+		
+		throw new PaymentException("Payment type is already present");
 	}
 
 	@Override
-	public Shipper addShipper(Shipper shipper, String loggedInAdminId) throws AdminException {
+	public Shipper addShipper(Shipper shipper) throws AdminException, ShipperException {
 		// TODO Auto-generated method stub
-		if(adminCurrentSession.findById(loggedInAdminId).isPresent())
-		{
+      if(shipperRepo.findByCompanyName(shipper.getCompanyName()) == null)
 			return shipperRepo.save(shipper);
-			
-		}
-		throw new AdminException("Admin is not loggedIn");
+    
+      throw new ShipperException("Shipper already present");
 	}
 	
-	public Supplier addSupplier(Supplier supplier, String loggedInAdminId) throws AdminException
+	public Supplier addSupplier(Supplier supplier) throws AdminException, SupplierException
 	{
-		if(adminCurrentSession.findById(loggedInAdminId).isPresent())
-		{
+         if(supplierRepo.findByCompanyName(supplier.getCompanyName()) == null)
 			return supplierRepo.save(supplier);
-			
-		}
-		throw new AdminException("Admin is not loggedIn");
+
+         throw new SupplierException("Supplier already present");
 	}
 }

@@ -34,6 +34,7 @@ public class Product {
 	private Double sale_price;
 	private String color;
 	private String dimension;
+	@Size(max = 2000)
 	private String specification;
 	private String manufacturer;
 	private Integer quantity;

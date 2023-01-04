@@ -6,4 +6,6 @@ import com.buy_EZ.models.Shipper;
 
 public interface ShipperRepo extends JpaRepository<Shipper, Long>{
 
+     Shipper findByCompanyName(String name);
+	
 }

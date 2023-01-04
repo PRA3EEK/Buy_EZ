@@ -12,5 +12,6 @@ public interface SupplierRepo extends JpaRepository<Supplier, Long>{
 
 	public List<Supplier> findByCountry(String countryName);
 	
+	Supplier findByCompanyName(String name);
 	
 }

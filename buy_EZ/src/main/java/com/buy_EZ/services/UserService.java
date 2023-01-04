@@ -2,7 +2,7 @@ package com.buy_EZ.services;
 
 import java.util.List;
 
-import com.buy_EZ.exceptions.AdminException;
+
 import com.buy_EZ.exceptions.CategoryException;
 import com.buy_EZ.exceptions.CustomerException;
 import com.buy_EZ.exceptions.PaymentException;
@@ -13,14 +13,15 @@ import com.buy_EZ.models.Order;
 import com.buy_EZ.models.Product;
 import com.buy_EZ.models.ProductDTO;
 
+
 public interface UserService {
 
 	
-	public List<Product> searchProductsByname(String name, String loggedInUserId) throws ProductException, CustomerException;
+	public List<Product> searchProductsByname(String name) throws ProductException, CustomerException;
 	
-	public List<Product> searchProductByCategory(String categoryName, String loggedInUserId) throws CategoryException, ProductException, CustomerException;
+	public List<Product> searchProductByCategory(String categoryName) throws CategoryException, ProductException, CustomerException;
 	
-	public Product addRating(String productId, String loggedInUserId, Double rating) throws ProductException, CustomerException;
+	public Product addRating(String productId, Double rating) throws ProductException, CustomerException;
 	
 	public List<Product> sortProductsByPriceHighToLow(List<Product> products) throws ProductException;
 	
@@ -30,9 +31,9 @@ public interface UserService {
 	
 	public List<Product> sortProductsByRatingsLowToHigh(List<Product> products) throws ProductException;
 	
-	public Product getProductDetailsById(String id, String loggedInUserId) throws ProductException, CustomerException;
+	public Product getProductDetailsById(String id) throws ProductException, CustomerException;
 	
-	public ProductDTO addToCart(String productId, String loggedInId, Integer quantity) throws ProductException, CustomerException;
+	public ProductDTO addToCart(String productId, Integer quantity) throws ProductException, CustomerException;
 	
 	public Product deleteProductFromCart(String productId, String loggedInId) throws ProductException, CustomerException;
 	

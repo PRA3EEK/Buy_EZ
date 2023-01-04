@@ -6,6 +6,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.validation.ValidationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +31,7 @@ import com.buy_EZ.models.Payment;
 import com.buy_EZ.models.Product;
 import com.buy_EZ.models.ProductDTO;
 import com.buy_EZ.models.Shipper;
+import com.buy_EZ.models.SubCategory;
 import com.buy_EZ.models.Supplier;
 import com.buy_EZ.models.User;
 import com.buy_EZ.repositories.CategoryRepo;
@@ -38,6 +43,7 @@ import com.buy_EZ.repositories.PaymentRepo;
 //import com.buy_EZ.repositories.ProductDtoRepo;
 import com.buy_EZ.repositories.ProductRepo;
 import com.buy_EZ.repositories.ShipperRepo;
+import com.buy_EZ.repositories.SubCategoryRepo;
 import com.buy_EZ.repositories.SupplierRepo;
 
 @Service
@@ -63,50 +69,96 @@ public class UserServiceImpl implements UserService {
 	private OrderDetailRepo orderDetailRepo;
 	@Autowired
 	private PaymentRepo paymentRepo;
+	@Autowired
+	private SubCategoryRepo subCategoryRepo;
 
 	@Override
-	public List<Product> searchProductsByname(String name, String loggedInUserId)
-			throws ProductException, CustomerException {
+	public List<Product> searchProductsByname(String name) throws ProductException, CustomerException {
 		// TODO Auto-generated method stub
-		Optional<User> uOptional = customerRepo.findById(loggedInUserId);
 
-		if (uOptional.get() != null) {
-			Optional<CustomerCurrentSession> cOptional = userSessionRepo.findById(loggedInUserId);
-			if (cOptional.get() != null) {
-				return productRepo.searchProductsByName(name, name.split(" ")[0]);
-			}
-			throw new CustomerException("Customer with id " + loggedInUserId + " is not logged in");
-		}
-		throw new CustomerException("No customer exists with the user id " + loggedInUserId);
+				List<Product> products = productRepo.searchProductsByName(name, name.split(" ")[0]);
+			
+				if(products.size() > 0) return products;
+				
+				throw new ProductException("No product found");
 	}
 
 	@Override
-	public List<Product> searchProductByCategory(String categoryName, String loggedInUserId)
-			throws CategoryException, ProductException, CustomerException {
-		if (customerRepo.findById(loggedInUserId).get() != null) {
+	public List<Product> searchProductByCategory(String categoryName) throws CategoryException, ProductException, CustomerException {
 
-			if (userSessionRepo.findById(loggedInUserId).get() != null) {
-				Category c = categoryRepo.findByCategoryName(categoryName);
+		List<Product> res = new ArrayList<>();
+		Pattern pattern = Pattern.compile(categoryName+"?");
+        Matcher m = null; 
+              List<SubCategory> allSubCategories = subCategoryRepo.findAll();
+              if(allSubCategories.size()>0)
+              {
+                  for(SubCategory sc:allSubCategories)
+                  {
+                	  if(sc.getName().equalsIgnoreCase(categoryName))
+                	  {
+                		  res.addAll(sc.getProducts());
+                	  }else
+                	  {
+                			 String[] nameSplit = sc.getName().split(" ");
+                        	 for(String s:nameSplit)
+                        	 {
+                        		 m = pattern.matcher(s);
+                        		 if(!s.equals("&")) {
+                        			 if(s.equalsIgnoreCase(categoryName) || m.find())
+                        			 {
+                        				 res.addAll(sc.getProducts());
+                        				 break;
+                        			 }
+                        		 }
+                        	 
+                	  }
+                }
+                  }
+                  return res;
+              }else
+              {
+                 List<Category> allCategories = categoryRepo.findAll();
+                 if(allCategories.size()>0)
+                 {
+                	 for(Category c:allCategories)
+                	 {
+                		 if(c.getCategoryName().equalsIgnoreCase(categoryName))
+                		 {
+                			 res.addAll(c.getProducts());
+                		 }else
+                		 {
+                			 String[] splitName = c.getCategoryName().split(" ");
+                			 for(String s:splitName)
+                			 {
+                				m = pattern.matcher(s);
+                				if(!s.equals("&"))
+                				{
+                					if(s.equals(categoryName) || m.find())
+                					{
+                						res.addAll(res);
+                						break;
+                					}
+                				}
+                				
+                			 }
+                		 }
+                	 }
+                	 return res;
+                 }
+                 throw new CategoryException("No category found with the name "+categoryName);
+              }
 
-				if (c != null) {
-					return productRepo.searchProductsByCategory(categoryName, categoryName.split(" ")[0]);
-				}
-				throw new CategoryException("No category is present with the name " + categoryName);
-			}
-			throw new CustomerException("You are not logged in with the id " + loggedInUserId);
 
-		}
-		throw new CustomerException("No customer present with the id " + loggedInUserId);
+			
 
 	}
 
 	@Override
-	public Product addRating(String productId, String loggedInUserId, Double rating)
-			throws ProductException, CustomerException {
+	public Product addRating(String productId, Double rating) throws ProductException, CustomerException {
 		// TODO Auto-generated method stub
-		if (customerRepo.findById(loggedInUserId).get() != null) {
-			if (userSessionRepo.findById(loggedInUserId).get() != null) {
-				if (productRepo.findById(productId).get() != null) {
+    
+		if(rating > 5 && rating<0) throw new ValidationException("Rating should be between 0 and 5");
+				if (productRepo.findById(productId).isPresent()) {
 					Product p = productRepo.findById(productId).get();
 					Double newRating = rating;
 					Double prevRating = p.getRatings();
@@ -116,10 +168,7 @@ public class UserServiceImpl implements UserService {
 					return productRepo.save(p);
 				}
 				throw new ProductException("No product present with the id " + productId);
-			}
-			throw new CustomerException("You are not logged in with the id " + loggedInUserId);
-		}
-		throw new CustomerException("No customer present with the id " + loggedInUserId);
+
 	}
 
 	@Override
@@ -163,33 +212,36 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Product getProductDetailsById(String productId, String loggedInUserId)
-			throws ProductException, CustomerException {
+	public Product getProductDetailsById(String productId) throws ProductException, CustomerException {
 		// TODO Auto-generated method stub
-		if (userSessionRepo.findById(loggedInUserId).get() != null) {
+
 			if (productRepo.findById(productId).get() != null) {
 				return productRepo.findById(productId).get();
 			}
 			throw new ProductException("No product present with the id " + productId);
-		}
-		throw new CustomerException("You are not logged in with the id " + loggedInUserId);
+
 
 	}
 
 	@Override
-	public ProductDTO addToCart(String productId, String loggedInId, Integer quantity)
+	public ProductDTO addToCart(String productId, Integer quantity)
 			throws ProductException, CustomerException {
 		// TODO Auto-generated method stub
-		if (userSessionRepo.findById(loggedInId).get() != null) {
+
 			if (productRepo.findById(productId).get() != null) {
 
-				User customer = customerRepo.findById(loggedInId).get();
+			    String username = GetSubject.getUsername();
+				User customer = customerRepo.findByUsername(username);
+				if(customer==null) throw new CustomerException("No user found with the username "+username);
+				
 				Product p = productRepo.findById(productId).get();
-				List<Product> products = customer.getCart().getProducts();
+				List<ProductDTO> products = customer.getCart().getCartProducts();
 
-				for (Product pro : products) {
-					if (pro.getProductId() == p.getProductId()) {
-						throw new ProductException("Product is already present in the cart");
+				for (ProductDTO pro : products) {
+					if (pro.getProductDtoId().equals(p.getProductId())) {
+                        pro.setQuantity(pro.getQuantity()+quantity);
+                        customerRepo.save(customer);
+                        return pro;
 					}
 				}
 
@@ -207,8 +259,7 @@ public class UserServiceImpl implements UserService {
 
 			}
 			throw new ProductException("No product present with the id " + productId);
-		}
-		throw new CustomerException("You are not logged in with the id " + loggedInId);
+
 //	return null;
 	}
 

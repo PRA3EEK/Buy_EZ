@@ -46,7 +46,7 @@ public class JwtUtils {
 	  public ResponseCookie generateJwtCookie(CustomUserDetails userDetails) {
 		  
 		  String jwt = generateJwtToken(userDetails.getUsername());
-		  ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt).path("/buy_EZ").maxAge(24 * 60 * 60).httpOnly(false).build();
+		  ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt).path("/buy_EZ").maxAge(24 * 60 * 60).httpOnly(true).build();
 		  return cookie;
 	  }
 	  

@@ -20,7 +20,6 @@ import lombok.NonNull;
 
 @Entity@Data@AllArgsConstructor@NoArgsConstructor
 public class Payment {
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long paymentId;

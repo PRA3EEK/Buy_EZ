@@ -19,7 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.buy_EZ.exceptions.AdminException;
 import com.buy_EZ.exceptions.CategoryException;
 import com.buy_EZ.exceptions.OrderException;
+import com.buy_EZ.exceptions.PaymentException;
 import com.buy_EZ.exceptions.ProductException;
+import com.buy_EZ.exceptions.ShipperException;
+import com.buy_EZ.exceptions.SupplierException;
 import com.buy_EZ.models.Admin;
 import com.buy_EZ.models.AdminDto;
 import com.buy_EZ.models.Category;
@@ -50,31 +53,29 @@ public class AdminController {
 		return new ResponseEntity<AdminDto>(adminService.insertAdmin(admin), HttpStatus.OK);
 	}
 
-	@PostMapping("category/{loggedInAdminId}")
+	@PostMapping("/add-category")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<Category> insertCategory(@Valid @RequestBody Category category,
-			@PathVariable("loggedInAdminId") String adminId) throws AdminException, CategoryException {
-		return new ResponseEntity<Category>(adminService.insertCategory(category, adminId), HttpStatus.OK);
+	public ResponseEntity<Category> insertCategory(@Valid @RequestBody Category category) throws AdminException, CategoryException {
+		return new ResponseEntity<Category>(adminService.insertCategory(category), HttpStatus.OK);
 	}
 
-	@PostMapping("/product/{categoryName}/{subCategoryName}")
+	@PostMapping("/add-product/{categoryName}")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<Product> insertProduct(@Valid @RequestBody Product product,
-			@PathVariable("categoryName") String name, @PathVariable("subCategoryName") String subCategoryName,
-			@RequestParam(value = "loggedInAdminId") String adminId)
+			@PathVariable("categoryName") String name)
 			throws AdminException, ProductException, CategoryException {
 
-		return new ResponseEntity<Product>(adminService.insertProduct(product, name, subCategoryName, adminId),
-				HttpStatus.OK);
+		return new ResponseEntity<Product>(adminService.insertProduct(product, name),
+				HttpStatus.CREATED);
 
 	}
 
 	
-	@PostMapping("add/subCategory")
+	@PostMapping("/add-subCategory")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<SubCategory> insertSubCategory(@RequestBody SubCategory subCategory, @RequestParam("parentCategoryName") String name, @RequestParam("loggedInAdminId") String id) throws CategoryException, AdminException{
+	public ResponseEntity<SubCategory> insertSubCategory(@RequestBody SubCategory subCategory, @RequestParam("parentCategoryName") String name) throws CategoryException, AdminException{
 		
-		return new ResponseEntity<SubCategory>(adminService.insertSubCategory(subCategory, name, id), HttpStatus.OK);
+		return new ResponseEntity<SubCategory>(adminService.insertSubCategory(subCategory, name), HttpStatus.OK);
 		
 	}
 	@GetMapping("/order/customer")
@@ -83,21 +84,21 @@ public class AdminController {
 		return new ResponseEntity<User>(adminService.searchByOrder(orderId, adminId), HttpStatus.OK);
 	}
 	
-	@PostMapping("add/payment")
+	@PostMapping("/add-payment")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<Payment> addPayment(@Valid@RequestBody Payment payment, @RequestParam("loggedInAdminId") String adminId) throws AdminException{
-		return new ResponseEntity<Payment>(adminService.addPaymentType(payment, adminId), HttpStatus.OK);
+	public ResponseEntity<Payment> addPayment(@Valid@RequestBody Payment payment) throws AdminException, PaymentException{
+		return new ResponseEntity<Payment>(adminService.addPaymentType(payment), HttpStatus.CREATED);
 	}
-	@PostMapping("add/shipper")
+	@PostMapping("/add-shipper")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<Shipper> addShipper(@Valid@RequestBody Shipper shipper, @RequestParam("loggedInAdminId") String adminId) throws AdminException{
-		return new ResponseEntity<Shipper>(adminService.addShipper(shipper, adminId), HttpStatus.OK);
+	public ResponseEntity<Shipper> addShipper(@Valid@RequestBody Shipper shipper) throws AdminException, ShipperException{
+		return new ResponseEntity<Shipper>(adminService.addShipper(shipper), HttpStatus.CREATED);
 	}
-	@PostMapping("add/supplier")
+	@PostMapping("/add-supplier")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<Supplier> addSupplier(@Valid@RequestBody Supplier supplier, @RequestParam("loggedInAdminId") String adminId) throws AdminException
+	public ResponseEntity<Supplier> addSupplier(@Valid@RequestBody Supplier supplier) throws AdminException, SupplierException
 	{
-		return new ResponseEntity<Supplier>(adminService.addSupplier(supplier, adminId), HttpStatus.OK);
+		return new ResponseEntity<Supplier>(adminService.addSupplier(supplier), HttpStatus.CREATED);
 	}
 	@GetMapping("/msg")
 	@PreAuthorize("hasRole('ADMIN')")

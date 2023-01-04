@@ -70,37 +70,7 @@ public class LoginServiceImpl implements LoginService{
     private BCryptPasswordEncoder encoder;
     
 	
-	@Override
-	public CustomerCurrentSession adminLogin(AdminDto admin) throws AdminException {
-		// TODO Auto-generated method stub
-		
-User a = customerRepo.findByUsername(admin.getUsername());
-		
-		if(a!=null) {
-			
-			
-			if(a.getPassword().equals(admin.getPassword())) {
-				
-				CustomerCurrentSession acs =  customerCurrentSessionRepo.findByUsername(a.getUsername());
-				if(acs == null) {
-					
-						CustomerCurrentSession ac = new CustomerCurrentSession(a.getUserId(), a.getUsername(), new BCryptPasswordEncoder().encode(a.getPassword()), LocalDateTime.now());
-						
-						customerCurrentSessionRepo.save(ac);
-						
-						return ac;
-					
-				}
-				
-				throw new AdminException("Admin is already logged in");
-			}else {
-				throw new AdminException("Incorrect Password");
-			}
-			
-		}
-		throw new AdminException("No admin available with the username "+admin.getUsername());
-		
-	}
+	
 
 	
 	
@@ -162,23 +132,6 @@ User a = customerRepo.findByUsername(admin.getUsername());
 	}
 
 
-    public AdminDto adminRegister(Admin admin) throws AdminException{
-    	
-    	Admin op = adminRepo.findByUsername(admin.getUsername());
-    	
-    	if(op == null)
-    	{
-    		admin.setAdminId(UUID.randomUUID().toString());
-    		adminRepo.save(admin);
-    		AdminDto admindto = new AdminDto(admin.getAdminId(), admin.getUsername(), admin.getPassword());
-    		return admindto;
-    	}
-    	
-    	
-    	throw new AdminException("Admin already present with the username "+admin.getUsername());
-    }
-	
-
 
 	@Override
 	public Object[] customerLogin(CustomerDto customerDto) throws CustomerException {
@@ -226,7 +179,6 @@ User a = customerRepo.findByUsername(admin.getUsername());
 		     ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
 		     return cookie;
 		}
-
 		throw new CustomerException("Customer is not logged In");
 	}
 }
