@@ -3,6 +3,8 @@ package com.buy_EZ.exceptions;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
+import javax.validation.ValidationException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -46,6 +48,12 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(SQLException.class)
 	public ResponseEntity<ErrorDetails> sqlExceptionHandler(SQLException sqlException, WebRequest wr){
 		ErrorDetails ed = new ErrorDetails(LocalDateTime.now(), sqlException.getMessage(), wr.getDescription(false));
+	   return new ResponseEntity<ErrorDetails>(ed, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(ValidationException.class)
+	public ResponseEntity<ErrorDetails> validationExceptionHandler(ValidationException validationException, WebRequest wr){
+		ErrorDetails ed = new ErrorDetails(LocalDateTime.now(), validationException.getMessage(), wr.getDescription(false));
 	   return new ResponseEntity<ErrorDetails>(ed, HttpStatus.BAD_REQUEST);
 	}
 	

@@ -228,7 +228,7 @@ public class UserServiceImpl implements UserService {
 			throws ProductException, CustomerException {
 		// TODO Auto-generated method stub
 
-			if (productRepo.findById(productId).get() != null) {
+			if (productRepo.findById(productId).isPresent()) {
 
 			    String username = GetSubject.getUsername();
 				User customer = customerRepo.findByUsername(username);
@@ -239,6 +239,7 @@ public class UserServiceImpl implements UserService {
 
 				for (ProductDTO pro : products) {
 					if (pro.getProductDtoId().equals(p.getProductId())) {
+						p.setQuantity(p.getQuantity() - quantity);
                         pro.setQuantity(pro.getQuantity()+quantity);
                         customerRepo.save(customer);
                         return pro;
@@ -262,16 +263,19 @@ public class UserServiceImpl implements UserService {
 
 //	return null;
 	}
+	
+	
+	
 
-	public Product deleteProductFromCart(String productId, String loggedInId)
+	public Product deleteProductFromCart(String productId)
 			throws ProductException, CustomerException {
 
-		Optional<User> op = customerRepo.findById(loggedInId);
+		String username = GetSubject.getUsername();
+		User customer = customerRepo.findByUsername(username);
 
-		if (op.isPresent()) {
-			Optional<CustomerCurrentSession> op2 = userSessionRepo.findById(loggedInId);
-			if (op2.isPresent()) {
-				User customer = op.get();
+		if (customer!=null) {
+			
+				
 
 				List<Product> products = customer.getCart().getProducts();
 				List<ProductDTO> cartProducts = customer.getCart().getCartProducts();
@@ -314,26 +318,24 @@ public class UserServiceImpl implements UserService {
 				}
 
 			}
-			throw new CustomerException("user is not logged in");
-		}
-		throw new CustomerException("User is not registered");
+			throw new CustomerException("User is not logged in");
+		
+	
 	}
 
-	public Cart getCartDetails(String loggedInId) throws CustomerException {
+	public Cart getCartDetails() throws CustomerException {
+     
+		String username = GetSubject.getUsername();
+		User u = customerRepo.findByUsername(username);
+		
 
-		Optional<User> user = customerRepo.findById(loggedInId);
+		if (u != null) {
 
-		if (user.get() != null) {
+		
 
-			Optional<CustomerCurrentSession> op = userSessionRepo.findById(loggedInId);
+				return u.getCart();
 
-			if (op.get() != null) {
-
-				return user.get().getCart();
-
-			}
-
-			throw new CustomerException("You are not logged in");
+			
 
 		}
 
@@ -435,5 +437,29 @@ public class UserServiceImpl implements UserService {
 	public List<Category> getAllCategories() {
 		// TODO Auto-generated method stub
 		return categoryRepo.findAll();
+	}
+
+	@Override
+	public List<Product> getAllProducts() {
+		// TODO Auto-generated method stub
+        return productRepo.findAll();
+	}
+
+	@Override
+	public User getUserDetails() throws CustomerException {
+		// TODO Auto-generated method stub
+     String username = GetSubject.getUsername();
+      User u = customerRepo.findByUsername(username);
+      if(u != null)
+      {
+    	  return u;
+      }
+      throw new CustomerException("No customer found with the username "+username);
+	}
+
+	@Override
+	public List<SubCategory> getAllSubCategories() {
+		// TODO Auto-generated method stub
+		return subCategoryRepo.findAll();
 	}
 }

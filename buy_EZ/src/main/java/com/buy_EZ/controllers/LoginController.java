@@ -62,11 +62,6 @@ public class LoginController {
 	private JwtUtils jwtUtils;
 	
 	
-	@PostMapping("/admin")
-	public ResponseEntity<CustomerCurrentSession> adminLogin( @RequestBody AdminDto admin) throws AdminException {
-		return new ResponseEntity<CustomerCurrentSession>(loginService.adminLogin(admin), HttpStatus.OK);
-	}
-	
 	
 	
 	@PostMapping("/register")
@@ -86,10 +81,6 @@ public class LoginController {
 		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, result[0].toString()).body(new UserResponse(customerDto.getId(), customerDto.getUsername(), u.getEmail(), roles, result[0].toString()));
 	}
 	
-	@PostMapping("/admin/register")
-	public ResponseEntity<AdminDto> registerAdmin(@RequestBody Admin admin) throws AdminException{
-		return new ResponseEntity<AdminDto>(loginService.adminRegister(admin), HttpStatus.OK);
-	}
 	
 	@DeleteMapping("/logout")
 	public ResponseEntity<?> userLogout() throws CustomerException

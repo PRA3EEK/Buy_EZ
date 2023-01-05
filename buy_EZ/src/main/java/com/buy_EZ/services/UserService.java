@@ -12,6 +12,8 @@ import com.buy_EZ.models.Category;
 import com.buy_EZ.models.Order;
 import com.buy_EZ.models.Product;
 import com.buy_EZ.models.ProductDTO;
+import com.buy_EZ.models.SubCategory;
+import com.buy_EZ.models.User;
 
 
 public interface UserService {
@@ -35,14 +37,21 @@ public interface UserService {
 	
 	public ProductDTO addToCart(String productId, Integer quantity) throws ProductException, CustomerException;
 	
-	public Product deleteProductFromCart(String productId, String loggedInId) throws ProductException, CustomerException;
+	public Product deleteProductFromCart(String productId) throws ProductException, CustomerException;
 	
-	public Cart getCartDetails(String loggedInId) throws CustomerException;
+	public Cart getCartDetails() throws CustomerException;
 	
 	public Order placeOrder(String loggedInId, String paymentType) throws CustomerException, PaymentException;
 	
 	public List<ProductDTO> getProductsFromOrder(String orderId);
 	
 	public List<Category> getAllCategories();
+	
+	public List<SubCategory> getAllSubCategories();
+	
+	public List<Product> getAllProducts();
+	
+	public User getUserDetails() throws CustomerException;
+	
 	
 }

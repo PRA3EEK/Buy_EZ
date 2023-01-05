@@ -48,7 +48,7 @@ public class Product {
 	private Integer numberOfRatings=0;
 	@ManyToOne
 	private Category category;
-	@ManyToMany(mappedBy = "products")
+	@ManyToMany(mappedBy = "products")@JsonIgnore
 	private List<Cart> carts = new ArrayList<>();
 	@ElementCollection
 	private List<String> imageUrl = new ArrayList<>();

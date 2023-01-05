@@ -141,10 +141,12 @@ public class LoginServiceImpl implements LoginService{
 		Optional<User> customerOptional = customerRepo.findById(customerDto.getId());
 		if(customerOptional.isPresent())
 		{
-			if(!customerCurrentSessionRepo.findById(customerDto.getId()).isPresent())
+			if(customerCurrentSessionRepo.findById(customerDto.getId()).isPresent())
 			{
 				
-			
+				customerCurrentSessionRepo.delete(customerCurrentSessionRepo.findById(customerDto.getId()).get());
+			}
+				
 				Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(customerDto.getUsername(), customerDto.getPassword()));
 				
 				SecurityContext context = SecurityContextHolder.getContext();
@@ -159,8 +161,7 @@ public class LoginServiceImpl implements LoginService{
 				   customerCurrentSessionRepo.save(newSession);
 				  
 				   return new Object[] {cookie, customerOptional.get(), userDetails.getAuthorities()};
-			}
-		   throw new CustomerException("You are already loggedIn");
+			
 		}
 		throw new CustomerException("No customer present with the id "+customerDto.getId());
 	}
