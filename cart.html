@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        #cart {
+            border: 1px solid;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="cart">
+     <div id="totalAmount">
+
+     </div>
+    </div>
+</body>
+
+</html>
+<script>
+    var totalCartAmmount = 0;
+    let cookie = document.cookie.split("=")[1];
+    if (cookie == "") {
+        let h2 = document.createElement("h2");
+        h2.innerText = "You are not logged in";
+        document.getElementById("cart").append(h2);
+    }
+    else {
+        fetch('http://localhost:8765/buy_EZ/user/cart',
+            {
+                headers: {
+                    "Authorization": `Bearer ${cookie}`
+                }
+            }).then(res => {
+                if (res.ok) {
+                    return res.json();
+                } else {
+                    return Promise.reject(res);
+                }
+            }).then((res) => {
+                let products = res.cartProducts;
+                // console.log(res);
+
+                for (let i = 0; i < products.length; i++) {
+                    let id = products[i].productDtoId;
+                    fetch(`http://localhost:8765/buy_EZ/user/searchById?productId=${id}`, {
+
+                        headers: {
+                            "Authorization": `Bearer ${cookie}`
+                        }
+                    }).then(res => {
+                        if (res.ok) {
+                            return res.json();
+                        } else {
+                            return Promise.reject(res);
+                        }
+                    }).then((res) => {
+                        var cartPrice = 0;
+                        cartPrice = (cartPrice + (products[i].quantity) * (res.sale_price));
+
+                        let div = document.createElement("div");
+                        let quantityDiv = document.createElement("div");
+                        let img = document.createElement("img");
+                        img.src = res.imageUrl[0];
+                        let h5 = document.createElement("h5");
+                        h5.innerText = res.productName;
+                        let p = document.createElement("p");
+                        let btn = document.createElement("button");
+                        btn.innerText = "Remove from cart";
+                        btn.onclick = function (totalCartAmmount) 
+                        {
+                            fetch(`http://localhost:8765/buy_EZ/user/delete-cart?productId=${res.productId}`, {
+                                method: 'DELETE',
+                                headers:{
+                                    "Authorization": `Bearer ${cookie}`
+                                }
+                            }).then(res => {
+                                if(res.ok){return res.json()}
+                                else {return Promise.reject(res)};
+                            }).then(res => {
+                                console.log(res);
+                                window.location.reload();
+                            }).catch(res => {
+                                console.log(res);
+                            })
+                        }
+                        p.innerText = "Quantity : " + products[i].quantity;
+                        quantityDiv.append(p);
+                        div.append(img, h5);
+                        document.getElementById("cart").append(div, quantityDiv, btn)
+                        let price = document.createElement("p");
+                        price.innerText = cartPrice;
+                        
+                        totalCartAmmount = totalCartAmmount + cartPrice;
+                        document.getElementById('totalAmount').innerText="Total Amount : "+totalCartAmmount;
+                        document.getElementById("cart").append(price);
+                    })
+
+                }
+               
+            })
+
+    }
+</script>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    #productDetails {
+        border: 1 px solid black;
+        width: 70%;
+        margin: auto;
+    }
+
+    #productDetails>input {
+        width: 100%;
+        height: 30px;
+        padding: 10px;
+        margin-top: 10px;
+    }
+
+    #add {
+        font-size: 20px;
+        transition: 1s;
+
+    }
+
+    #add:hover {
+        background-color: black;
+        color: white;
+
+    }
+</style>
+
+<body>
+
+    <h1>Add product</h1>
+    <label for="cat">Select category</label>
+    <select name="Category" id="cat" style="height: 30px; padding: 0 10px 0 10px; cursor: pointer;" required onchange="test();">
+       
+    </select>
+
+    <form action="" id="productDetails">
+        <input type="text" name="" id="name" placeholder="Product Name" required>
+        <input type="text" name="" id="color" placeholder="Color" required>
+        <input type="number" name="" id="mrp" placeholder="Market price" required>
+        <input type="number" name="" id="sp" placeholder="Sale price" required>
+        <input type="text" name="" id="dim" placeholder="Dimensions" required>
+        <input type="text" name="" id="specs" placeholder="Specifications" required>
+        <input type="text" name="" id="quant" placeholder="Quantity" required>
+        <input type="text" name="" id="manu" placeholder="Manufacturer" required>
+        <input type="text" name="img[]" id="img1" placeholder="Image url 1" required>
+        <input type="text" name="img[]" id="img2" placeholder="Image url 2">
+        <input type="text" name="img[]" id="img3" placeholder="Image url 3">
+        <input type="text" name="img[]" id="img4" placeholder="Image url 4">
+        <input type="text" name="img[]" id="img5" placeholder="Image url 5">
+        <input type="text" name="img[]" id="img6" placeholder="Image url 6">
+        <input type="submit" name="Add" id="add" value="Add" 
+            style="width: 30%; height: 50px; border: none; cursor: pointer;">
+    </form>
+
+</body>
+
+</html>
+<script>
+    let cookie = document.cookie.split("=")[1];
+    fetch('http://localhost:8765/buy_EZ/user/subCategories',
+        {
+            headers: {
+                "Authorization": `Bearer ${cookie}`
+            }
+        }).then(response => {
+            return response.json();
+        }).then(response => {
+            // console.log(response)
+            let categories = response;
+            for (let i = 0; i < categories.length; i++) {
+                let option = document.createElement('option');
+                option.setAttribute('value', categories[i].name);
+                option.innerText = categories[i].name;
+                document.getElementById('cat').append(option);
+            }
+        });
+       
+        
+
+        // console.log(imgCopy);
+       var categoryName = "";
+        function test()
+        {
+            var selvalue = document.getElementById("cat");
+       var text = selvalue.options[selvalue.selectedIndex].text;
+         categoryName = text;
+        
+        }
+        
+       
+       let form = document.getElementById('productDetails');
+        form.addEventListener('submit', (e) => {
+              e.preventDefault();
+
+              var img_1 = form.img1.value;
+        var img_2 = form.img2.value;
+        var img_3 = form.img3.value;
+        var img_4 = form.img4.value;
+        var img_5 = form.img5.value;
+        var img_6 = form.img6.value;
+
+              fetch(`http://localhost:8765/buy_EZ/admin/add-product/${categoryName}`, {
+            method: 'POST',
+            body: JSON.stringify({
+                productName: form.name.value,
+                market_price: form.mrp.value,
+                sale_price: form.sp.value,
+                color: form.color.value,
+                dimension: form.dim.value,
+                specification: form.specs.value,
+                manufacturer: form.manu.value,
+                quantity: form.quant.value,
+                imageUrl: [
+                    img_1,
+                    img_2,
+                    img_3,
+                    img_4,
+                    img_5,
+                    img_6
+            ]
+            }),
+            headers:{
+                'Content-type':'application/json',
+                'Authorization': `Bearer ${cookie}`
+            }
+        }).then((response) => {
+            if(response.ok){
+                return response.json();
+            }
+            else{
+                return Promise.reject(response);
+            }
+        }).then((response) => {
+            console.log(response);
+            document.getElementById('add').value = 'Product added successfully!'
+            form.reset();
+            return false;
+        })
+        })
+       
+</script>

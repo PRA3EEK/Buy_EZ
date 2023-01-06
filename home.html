@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        .catLink
+        {
+            padding: 20px;
+            /* border: 1px solid; */
+
+           
+        }
+        #Nav2
+        {
+            /* border: 1px solid black; */
+            /* height: 30px; */
+            overflow-y: none;
+            
+            
+        }
+        #categories>div{
+            width: 50%;
+            /* border: 1px solid red; */
+            position: relative;
+        }
+        #categories{
+            display: flex;
+            overflow-x: scroll;
+            top: 0;
+        }
+        #categories>div{
+           border: 1px solid;
+           float: left;
+     
+          
+          white-space: nowrap;
+          
+        }
+        #products{
+
+            display: grid;
+            grid-template-columns: repeat(4, 20%);
+            justify-content: space-around;
+            margin-top: 50px;
+        }
+
+        #products>div{
+            
+            border: 1px solid black;
+            overflow: hidden;
+            display: grid;
+            justify-content: center;
+            align-items: center;
+
+        }
+        #products>div>img{
+            width: 100%;
+            transition: 0.5s;
+            
+            /* background-color: transparent; */
+            /* border: 1px solid red; */
+
+        }
+        #products>div>img:hover{
+            scale: 0.8;
+        }
+        #products>div>h5{
+            width: 100%;
+            /* border: 1px solid red; */
+            padding: 10px;
+        }
+        #cart
+        {
+            /* border: 1px solid black; */
+         
+        }
+        #cart{
+            height: 30px;
+            width: 30px;
+        }
+        #Nav1{
+         /* border: 1px solid red; */
+         display: flex;
+         justify-content: space-around;
+         align-items: center;
+         height: 60px;
+          
+        }
+        #searchBar{
+            width: 70%;
+            height: 40px;
+            padding: 0 0 0 40px;
+            font-size: 15px;
+            background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' class='bi bi-search' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'%3E%3C/path%3E%3C/svg%3E") no-repeat 13px center;
+        }
+        input[type="search"]:focus {
+  box-shadow: 0 0 3px 0 #1183d6;
+  border-color: #1183d6;
+  outline: none;
+}
+        .info{
+            padding: 10px;
+            display: grid;
+            align-items: center;
+        }
+        .info>h5{
+            /* line-height: 20px; */
+            margin-bottom: 10px;
+        }
+        #pdiv{
+            display: grid;
+            grid-template-columns: 10% 40% 30%;
+           width: 500%;
+        }
+        #smallImgDiv{
+            border: 1px solid red;
+        }
+       
+    </style>
+</head>
+<body>
+    <nav id="navbar">
+        <div id="Nav1">
+            <a href="myaccount.html">My Account</a>
+            <input type="search" placeholder="search products by name" id="searchBar">
+            <img src="001-bag.png" alt="cart" id="cart" onclick="redirect()">
+            <div id="sign" >
+                <a href="signup.html">Sign up</a> |
+                <a href="signin.html">Sign in</a>
+            </div>
+            
+        </div>
+        <div id="Nav2">
+          <div id="categories">
+          </div>
+        </div>
+    </nav>
+    <div id="products">
+        
+    </div>
+</body>
+</html>
+<script>
+   let cookie = document.cookie;
+   let username = "";
+   if(cookie != "")
+   {
+    cookie = document.cookie.split("=")[1]
+    document.getElementById("sign").innerHTML="";
+    fetch('http://localhost:8765/buy_EZ/user/details', 
+        {
+            headers: {
+                "Authorization":`Bearer ${cookie}`
+            }
+        }).then(res => {
+            if(res.ok){
+                return res.json();
+            }else{
+                return Promise.reject(res);
+            }
+        }).then((res)=>{
+            let roles = res.roles;
+            for(let i=0; i<roles.length; i++)
+            {
+                if(roles[i].name == 'ROLE_ADMIN')
+                {
+                    let adminPageLink = document.createElement('a');
+                    adminPageLink.innerText="Admin resources"
+                    adminPageLink.href="Admin.html";
+                    
+                    document.getElementById("Nav1").append(adminPageLink);
+                }
+            }
+            username = res.username;
+            let p = document.createElement("P");
+            p.innerText = username;
+            document.getElementById("sign").append(p);
+         })
+        //.catch((response)=> {
+        //     response.json().then(res => {
+        //         console.log(res);
+        //     })
+        // })
+
+   }
+  
+   
+    
+    fetch('http://localhost:8765/buy_EZ/user/categories',
+    {
+            headers: {
+                "Authorization":`Bearer ${cookie}`
+            }
+        }).then(response => {
+        return response.json();
+    }). then(response => {
+        let categories = response;
+        for(let i=0; i<categories.length; i++)
+        {
+            let div = document.createElement("div");
+            let a = document.createElement("a");
+            div.append(a);
+            a.className = "catLink";
+            a.innerText = categories[i].categoryName;
+            document.getElementById("categories").append(div);
+        }
+    });
+
+    fetch("http://localhost:8765/buy_EZ/user/products",
+    {
+            headers: {
+                "Authorization": `Bearer ${cookie}`
+            }
+        }).then(response => {
+        return response.json();
+    }).then(response => {
+        // console.log(response)
+        let arr = response;
+        for(let i=0 ; i<arr.length ; i++)
+        {
+            let div = document.createElement("div");
+            div.style.cursor="pointer";
+            div.onclick = function ()
+            {
+               window.location=`productView.html?productId=${arr[i].productId}`
+
+            }
+
+       let img = document.createElement("img");
+       let h5 = document.createElement("h5");
+       let h5_2 = document.createElement("h5");
+       let h5_3 = document.createElement("h5");
+       let h5_4 = document.createElement("h5");
+       let h5_5 = document.createElement("h5");
+       let btn = document.createElement("button");
+       btn.innerText = "Add to cart";
+    
+       btn.onclick =  function (){
+ 
+       fetch(`http://localhost:8765/buy_EZ/user/add-cart?productId=${arr[i].productId}&quantity=1`, {
+        method: 'POST',
+        headers:{
+            'Content-type':'application/json',
+            'Authorization':`Bearer ${cookie}`
+        }
+       }).then(res => {
+        if(res.ok)
+        {
+            return res.json();
+        }else{
+            return Promise.reject(res);
+        }
+       }).then(res => {
+        console.log(res);
+        btn.innerText = "Product added to cart!"
+        btn.onclick="";
+       }).catch(res => {
+        console.log("error");
+       })
+   }
+       let off = Math.round(((arr[i].market_price - arr[i].sale_price)/arr[i].market_price) * 100);
+       let strike = document.createElement('s');
+       h5_2.innerText = `M.R.P.: ₹ ${arr[i].market_price}`;
+       strike.append(h5_2);
+       h5_3.innerText = `Sale price: ₹ ${arr[i].sale_price}`;
+       h5_4.innerText = `${off}% Off`
+       h5_5.innerText = `You are saving ₹ ${arr[i].market_price - arr[i].sale_price}`;
+       let infoDiv = document.createElement('div');
+       infoDiv.className='info';
+       infoDiv.append(h5, strike, h5_3, h5_4 , h5_5, btn);
+       
+       div.append(img, infoDiv);
+       img.src=arr[i].imageUrl[0];
+       h5.innerText=arr[i].productName;
+       document.getElementById("products").append(div);
+        }
+    
+    })
+  
+    function redirect (){
+        window.location = "cart.html"
+    }
+
+   
+  
+    // Adding search function to search bar with id searchBar
+   
+    document.getElementById('searchBar').addEventListener('keydown', (e) =>
+    {
+     const name = document.getElementById('searchBar').value;
+     if(e.code == 'Enter')
+     {
+        search(name);
+     }
+    })
+  
+
+    function search (name)
+    {
+      fetch(`http://localhost:8765/buy_EZ/user/search?name=${name}`).then((response) => {
+        if(response.ok)
+        {
+            return response.json();
+        }
+        else{
+            return new Promise(reject);
+        }
+      }).then((response) => {
+         console.log(response)
+      }).catch(response => {
+        console.log(response);
+      })
+    }
+
+</script>
