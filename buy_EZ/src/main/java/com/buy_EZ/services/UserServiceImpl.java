@@ -3,8 +3,10 @@ package com.buy_EZ.services;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -75,10 +77,41 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<Product> searchProductsByname(String name) throws ProductException, CustomerException {
 		// TODO Auto-generated method stub
+              
+		 
+				Set<Product> products = new HashSet<>();
+		
+				
+				List<Product> allProducts = productRepo.findAll();
+				
+				for(Product p:allProducts)
+				{
+					if(p.getProductName().toLowerCase().matches("(.*)"+name+"(.*)") || name.matches("(.*)"+p.getProductName().toLowerCase()+"(.*)"))
+					{
+						products.add(p);
+					}
+				}
+			 
+				List<SubCategory> allSubCategories = subCategoryRepo.findAll();
 
-				List<Product> products = productRepo.searchProductsByName(name, name.split(" ")[0]);
-			
-				if(products.size() > 0) return products;
+				for(SubCategory sc:allSubCategories)
+				{
+					if(sc.getName().toLowerCase().matches("(.*)"+name.toLowerCase()+"(.*)") || name.toLowerCase().matches("(.*)"+sc.getName().toLowerCase()+"(.*)"))
+					{
+						products.addAll(sc.getProducts());
+					}
+				}
+				
+				List<Category> allCategories = categoryRepo.findAll();
+
+				for(Category c:allCategories)
+				{
+					if(c.getCategoryName().toLowerCase().matches("(.*)"+name.toLowerCase()+"(.*)") || name.toLowerCase().matches("(.*)"+c.getCategoryName().toLowerCase()+"(.*)"))
+					{
+						products.addAll(c.getProducts());
+					}	
+				}
+				if(products.size() > 0) return new ArrayList<>(products);
 				
 				throw new ProductException("No product found");
 	}

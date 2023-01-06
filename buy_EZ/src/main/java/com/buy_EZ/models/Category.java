@@ -28,8 +28,8 @@ public class Category {
     @NotNull(message = "category name cannot be null")
     @NotBlank(message = "category name cannot be blank")
 	private String categoryName;
-	@JsonIgnore
-	@OneToMany(mappedBy = "category")
+	
+	@OneToMany(mappedBy = "category")@JsonIgnore
 	private List<Product> products = new ArrayList<>();
 	
 	@OneToMany(fetch = FetchType.EAGER, mappedBy = "parentCategory")@JsonIgnore

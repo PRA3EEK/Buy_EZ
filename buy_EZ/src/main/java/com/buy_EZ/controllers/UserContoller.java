@@ -39,7 +39,6 @@ public class UserContoller {
 	private UserService userService;
 	
 	@GetMapping("/search")
-	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<List<Product>> searchProduct(@RequestParam(value = "name") String name) throws ProductException, CustomerException{
 		return new ResponseEntity<List<Product>>(userService.searchProductsByname(name), HttpStatus.OK);
 	}
@@ -81,7 +80,6 @@ public class UserContoller {
 	}
 	
 	@GetMapping("/searchById")
-	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<Product> getProductDetails(@RequestParam(value = "productId") String productId) throws ProductException, CustomerException{
 		return new ResponseEntity<Product>(userService.getProductDetailsById(productId), HttpStatus.OK);
 	}

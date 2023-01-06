@@ -1,5 +1,11 @@
 package com.buy_EZ.controllers;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
 import javax.validation.Valid;
 import javax.websocket.server.PathParam;
 
@@ -7,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,6 +47,7 @@ import net.bytebuddy.utility.RandomString;
 
 @RestController
 @RequestMapping("/buy_EZ/admin")
+@CrossOrigin("*")
 public class AdminController {
 	@Autowired
 	private AdminRepo adminRepo;
@@ -64,7 +72,10 @@ public class AdminController {
 	public ResponseEntity<Product> insertProduct(@Valid @RequestBody Product product,
 			@PathVariable("categoryName") String name)
 			throws AdminException, ProductException, CategoryException {
-
+     List<String> urls = product.getImageUrl();
+     List<String> copy = urls.stream().filter((url) -> !url.equals("")).collect(Collectors.toList());
+     product.setImageUrl(copy);
+     System.out.println(copy);
 		return new ResponseEntity<Product>(adminService.insertProduct(product, name),
 				HttpStatus.CREATED);
 
