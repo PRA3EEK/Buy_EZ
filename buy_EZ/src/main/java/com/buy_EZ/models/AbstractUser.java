@@ -15,6 +15,8 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Fetch;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,7 +31,7 @@ public class AbstractUser {
 	
 	@NotNull(message = "Username cannot be null")
 	@NotBlank(message = "Username cannot be empty")
-	@Size(min = 3, max = 20, message = "Length of the username cannot be less than 3 and greater than 20")
+	@Size(min = 3, max = 20, message = "Length of the username cannot be less than 3 and greater than 20")	
 	private String username;
 	
 	@NotNull
@@ -41,6 +43,7 @@ public class AbstractUser {
 	
 	@NotNull(message = "Password cannot be null")
 	@NotBlank(message = "Password cannot be empty")
+	@JsonIgnore
 	private String password;
 	
 	@NotNull(message = "Address cannot be null")

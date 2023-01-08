@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
@@ -14,8 +15,10 @@ import java.util.regex.Pattern;
 import javax.validation.ValidationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.buy_EZ.DTO.CartDTO;
 import com.buy_EZ.comparators.HighToLowByPrice;
 import com.buy_EZ.comparators.HighToLowByRatings;
 import com.buy_EZ.comparators.LowToHighByPrice;
@@ -24,6 +27,7 @@ import com.buy_EZ.exceptions.CategoryException;
 import com.buy_EZ.exceptions.CustomerException;
 import com.buy_EZ.exceptions.PaymentException;
 import com.buy_EZ.exceptions.ProductException;
+import com.buy_EZ.models.Address;
 import com.buy_EZ.models.Cart;
 import com.buy_EZ.models.Category;
 import com.buy_EZ.models.CustomerCurrentSession;
@@ -356,7 +360,7 @@ public class UserServiceImpl implements UserService {
 	
 	}
 
-	public Cart getCartDetails() throws CustomerException {
+	public CartDTO getCartDetails() throws CustomerException {
      
 		String username = GetSubject.getUsername();
 		User u = customerRepo.findByUsername(username);
@@ -366,9 +370,19 @@ public class UserServiceImpl implements UserService {
 
 		
 
-				return u.getCart();
+				Cart cart = u.getCart();
+				double totalAmount = 0;
+				double totalPayAmount = 0;
+				int num = 0;
+				for(ProductDTO pdto:cart.getCartProducts())
+				{
+					Product p = productRepo.findById(pdto.getProductDtoId()).get();
+					totalAmount += p.getMarket_price()*pdto.getQuantity();
+					totalPayAmount += p.getSale_price()*pdto.getQuantity();
+					num ++;
+				}
 
-			
+       return new CartDTO(num, totalAmount, totalPayAmount, totalAmount-totalPayAmount, cart.getCartProducts());			
 
 		}
 
@@ -377,19 +391,23 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Order placeOrder(String loggedInId, String paymentType) throws CustomerException, PaymentException {
+	public Order placeOrder(String paymentType, Address address) throws CustomerException, PaymentException {
 		// TODO Auto-generated method stub
-		if (customerRepo.findById(loggedInId).isPresent()) {
-			if (userSessionRepo.findById(loggedInId).isPresent()) {
-				User customer = customerRepo.findById(loggedInId).get();
+		String username = GetSubject.getUsername();
+		if (customerRepo.findByUsername(username)!=null) {
+	
+				User customer = customerRepo.findByUsername(username);
 				List<Shipper> shippers = shipperRepo.findAll();
 				if (!customer.getCart().getCartProducts().isEmpty()) {
-					Order o = new Order(customer);
+					Order o = new Order(customer, address);
 					List<Product> products = customer.getCart().getProducts();
 					List<ProductDTO> cartProducts = customer.getCart().getCartProducts();
 					//providing the supplier according to the country and the number of orders;
 					List<Supplier> suppliers = supplierRepo.findByCountry(customer.getCountry());
-					int ind = ThreadLocalRandom.current().nextInt(0, 3+1);
+					Random r = new Random();
+					int low = 0;
+					int high = suppliers.size();
+					int ind = r.nextInt(high - low) + low;
 					Supplier s = null;
 					if(ind>suppliers.size())
 					{
@@ -445,19 +463,15 @@ public class UserServiceImpl implements UserService {
 					
 					 orderRepo.save(o);
 					//removing all the products from the cart collections
-//					cartProducts.removeAll(cartProducts);
-//					products.removeAll(products);
+
 					
-					customer.getCart().setProducts(new ArrayList<>());
-					customer.getCart().setCartProducts(new ArrayList<>());
-                      					
+				
 					//updating the customer with the new instance;
 					customerRepo.save(customer);
 					return o;
 				}
 				throw new CustomerException("No product is present in the cart");
-			}
-			throw new CustomerException("User is not logged in");
+	
 		}
 		throw new CustomerException("Invalid customer");
 	}
@@ -494,5 +508,94 @@ public class UserServiceImpl implements UserService {
 	public List<SubCategory> getAllSubCategories() {
 		// TODO Auto-generated method stub
 		return subCategoryRepo.findAll();
+	}
+
+	@Override
+	public List<Order> getAllOrdersOfUser() throws CustomerException {
+		// TODO Auto-generated method stub
+		String username = GetSubject.getUsername();
+		
+		User customer = customerRepo.findByUsername(username);
+		
+		if(customer!=null)
+		{
+			return customer.getOrders();
+		}
+		throw new CustomerException("No customer found with the username "+username);
+	}
+
+	@Override
+	public Product updateProductQuantity(String productId, Integer quantity) throws ProductException {
+		// TODO Auto-generated method stub
+		// getting product from the productRepo and setting its quantity back
+		Product originalProduct = productRepo.findById(productId).get();
+		//getting product same product from the user cart to update its value
+		String username = GetSubject.getUsername();
+		User u = customerRepo.findByUsername(username);
+		List<ProductDTO> cartProducts =  u.getCart().getCartProducts();
+		
+		for(ProductDTO productDto:cartProducts)
+		{
+			if(productDto.getProductDtoId().equals(originalProduct.getProductId()))
+			{
+				originalProduct.setQuantity(originalProduct.getQuantity()+productDto.getQuantity());
+				originalProduct.setQuantity(originalProduct.getQuantity() - quantity);
+				productDto.setQuantity(quantity);
+				customerRepo.save(u);
+				return productRepo.save(originalProduct);
+			}
+		}
+		
+		throw new ProductException("No product found with the product id "+productId);
+	}
+
+	@Override
+	public List<Payment> getAllPaymentType() {
+		// TODO Auto-generated method stub
+		return paymentRepo.findAll();
+	}
+
+	@Override
+	public User updateAddress(Address address) throws CustomerException {
+		// TODO Auto-generated method stub
+		String username = GetSubject.getUsername();
+		
+		User user = customerRepo.findByUsername(username);
+		
+		if(user != null)
+		{
+			user.setAddress(address);
+			return customerRepo.save(user);
+		}
+		throw new CustomerException("No customer found with the username "+username);
+	}
+	
+	public User updateUsername(String newUsername) throws CustomerException
+	{
+		
+		String username = GetSubject.getUsername();
+		
+		if(customerRepo.findByUsername(username)!=null)
+		{
+			User user = customerRepo.findByUsername(username);
+			user.setUsername(newUsername);
+			return customerRepo.save(user);
+		}
+		throw new CustomerException("No user found with the username "+newUsername);
+	}
+	
+	public User updatePassword(String password) throws CustomerException{
+		
+         String username = GetSubject.getUsername();
+		
+		if(customerRepo.findByUsername(username)!=null)
+		{
+			User user = customerRepo.findByUsername(username);
+			user.setPassword(new BCryptPasswordEncoder().encode(password));
+			return customerRepo.save(user);
+		}
+		throw new CustomerException("No user found with the username "+username);
+		
+		
 	}
 }

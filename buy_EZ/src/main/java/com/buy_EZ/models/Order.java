@@ -7,11 +7,16 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumns;
 import javax.persistence.Table;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +44,11 @@ public class Order {
 	private LocalDate deliveryDate;
 	private String orderStatus;
 	private double billAmount;
+	@Embedded
+	private Address deliveryAddress;
 	@ManyToOne
 	private User user;
-	@OneToMany@JsonIgnore
+	@ManyToMany
 	private List<Product> products = new ArrayList<>();
 	@ManyToOne
 	private Shipper shipper;
@@ -49,13 +56,13 @@ public class Order {
 	private Payment payment;
 	@ElementCollection
 	private List<ProductDTO> userProducts = new ArrayList<>();
-	public Order(User customer) {
+	public Order(User customer, Address address) {
 		double bill = 0;
 		List<Product> products = customer.getCart().getProducts();
 		List<ProductDTO> cartProducts = customer.getCart().getCartProducts();
 		int ind = 0;
 		for(ProductDTO p:cartProducts) {
-			bill+=products.get(ind).getSale_price()*p.getQuantity();
+			bill+=(products.get(ind).getSale_price())*p.getQuantity();
 			ind++;
 		}
 		this.shipDate = LocalDate.now().plusDays(1);
@@ -65,6 +72,7 @@ public class Order {
 	    this.orderStatus = "Order placed";
 	    this.billAmount = bill;
 	    this.user = customer;
+	    this.deliveryAddress = address;
 	    
 	
 	}

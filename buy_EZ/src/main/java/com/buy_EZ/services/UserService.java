@@ -2,14 +2,16 @@ package com.buy_EZ.services;
 
 import java.util.List;
 
-
+import com.buy_EZ.DTO.CartDTO;
 import com.buy_EZ.exceptions.CategoryException;
 import com.buy_EZ.exceptions.CustomerException;
 import com.buy_EZ.exceptions.PaymentException;
 import com.buy_EZ.exceptions.ProductException;
+import com.buy_EZ.models.Address;
 import com.buy_EZ.models.Cart;
 import com.buy_EZ.models.Category;
 import com.buy_EZ.models.Order;
+import com.buy_EZ.models.Payment;
 import com.buy_EZ.models.Product;
 import com.buy_EZ.models.ProductDTO;
 import com.buy_EZ.models.SubCategory;
@@ -39,9 +41,9 @@ public interface UserService {
 	
 	public Product deleteProductFromCart(String productId) throws ProductException, CustomerException;
 	
-	public Cart getCartDetails() throws CustomerException;
+	public CartDTO getCartDetails() throws CustomerException;
 	
-	public Order placeOrder(String loggedInId, String paymentType) throws CustomerException, PaymentException;
+	public Order placeOrder(String paymentType, Address address) throws CustomerException, PaymentException;
 	
 	public List<ProductDTO> getProductsFromOrder(String orderId);
 	
@@ -52,6 +54,18 @@ public interface UserService {
 	public List<Product> getAllProducts();
 	
 	public User getUserDetails() throws CustomerException;
+	
+	public List<Order> getAllOrdersOfUser() throws CustomerException;
+	
+	public Product updateProductQuantity(String productId, Integer quantity) throws ProductException;
+	 
+	public List<Payment> getAllPaymentType();
+	
+	public User updateAddress(Address address) throws CustomerException;
+	
+	public User updateUsername(String newUsername) throws CustomerException;
+	
+	public User updatePassword(String password) throws CustomerException;
 	
 	
 }

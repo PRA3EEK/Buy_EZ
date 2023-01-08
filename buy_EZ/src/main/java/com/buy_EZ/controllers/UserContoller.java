@@ -2,6 +2,9 @@ package com.buy_EZ.controllers;
 
 import java.util.List;
 
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,23 +13,31 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.buy_EZ.DTO.CartDTO;
 import com.buy_EZ.exceptions.CategoryException;
 import com.buy_EZ.exceptions.CustomerException;
 import com.buy_EZ.exceptions.PaymentException;
 import com.buy_EZ.exceptions.ProductException;
+import com.buy_EZ.models.Address;
 import com.buy_EZ.models.Cart;
 import com.buy_EZ.models.Category;
 import com.buy_EZ.models.Order;
+import com.buy_EZ.models.Payment;
 import com.buy_EZ.models.Product;
 import com.buy_EZ.models.ProductDTO;
 import com.buy_EZ.models.SubCategory;
 import com.buy_EZ.models.User;
 import com.buy_EZ.repositories.ProductRepo;
 import com.buy_EZ.services.UserService;
+
+
 
 @RestController
 @RequestMapping("/buy_EZ/user")
@@ -98,14 +109,15 @@ public class UserContoller {
 	
 	@GetMapping("/cart")
 	@PreAuthorize("hasRole('USER')")
-	public ResponseEntity<Cart> getCartDetails() throws CustomerException{
-		return new ResponseEntity<Cart>(userService.getCartDetails(), HttpStatus.OK);
+	public ResponseEntity<CartDTO> getCartDetails() throws CustomerException{
+		return new ResponseEntity<CartDTO>(userService.getCartDetails(), HttpStatus.OK);
 	}
 	
 	@PostMapping("/cart/order")
 	@PreAuthorize("hasRole('USER')")
-	public ResponseEntity<Order> placeOrder(@RequestParam("loggedInId") String id, @RequestParam("paymentType") String paymentType) throws CustomerException, PaymentException{
-		return new ResponseEntity<Order>(userService.placeOrder(id, paymentType), HttpStatus.OK);
+	public ResponseEntity<Order> placeOrder(@RequestBody Address address, @RequestParam("paymentType") String paymentType) throws CustomerException, PaymentException{
+		System.out.println(address);
+		return new ResponseEntity<Order>(userService.placeOrder(paymentType, address), HttpStatus.OK);
 	}
 	@GetMapping("order/products")
 	@PreAuthorize("hasRole('USER')")
@@ -120,14 +132,13 @@ public class UserContoller {
 		return new ResponseEntity<List<Category>>(userService.getAllCategories(), HttpStatus.OK);
 	}
 	
-@GetMapping("/subCategories")
-	
+    @GetMapping("/subCategories")
 	public ResponseEntity<List<SubCategory>> getAllSubCategories()
 	{
 		return new ResponseEntity<List<SubCategory>>(userService.getAllSubCategories(), HttpStatus.OK);
 	}
+    
 	@GetMapping("/products")
-	
 	public ResponseEntity<List<Product>> getAllProducts()
 	{
 		return new ResponseEntity<List<Product>>(userService.getAllProducts(), HttpStatus.OK);
@@ -138,5 +149,25 @@ public class UserContoller {
 	public ResponseEntity<User> getUserDetails() throws CustomerException
 	{
 		return new ResponseEntity<User>(userService.getUserDetails(), HttpStatus.OK);
+	}
+	
+	@GetMapping("/orders")
+	@PreAuthorize("hasRole('USER')")
+	public ResponseEntity<List<Order>> getAllOrders() throws CustomerException
+	{
+		return new ResponseEntity<List<Order>>(userService.getAllOrdersOfUser(), HttpStatus.OK);
+	}
+	
+	@PutMapping("/update-quantity")
+	@PreAuthorize("hasRole('USER')")
+	public ResponseEntity<Product> updateProductQuantityOfCart(@RequestParam("productId") String productId, @RequestParam("quantity") Integer quantity) throws ProductException
+	{
+		return new ResponseEntity<Product>(userService.updateProductQuantity(productId, quantity), HttpStatus.OK);
+	}
+	
+	@GetMapping("/payments")
+	public ResponseEntity<List<Payment>> getPayments()
+	{
+		return new ResponseEntity<List<Payment>>(userService.getAllPaymentType(), HttpStatus.OK);
 	}
 }

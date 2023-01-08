@@ -50,6 +50,8 @@ public class Product {
 	private Category category;
 	@ManyToMany(mappedBy = "products")@JsonIgnore
 	private List<Cart> carts = new ArrayList<>();
+	@ManyToMany(mappedBy = "products")@JsonIgnore
+	private List<Order> orders = new ArrayList<>();
 	@ElementCollection
 	private List<String> imageUrl = new ArrayList<>();
 	@ManyToOne
