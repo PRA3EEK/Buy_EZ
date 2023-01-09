@@ -19,20 +19,28 @@ import com.buy_EZ.models.User;
 
 public interface AdminService {
 
+	//insert new Admin
 	public AdminDto insertAdmin(User admin) throws AdminException;
 	
+	//insert new category 
 	public Category insertCategory(Category category) throws AdminException, CategoryException;
 	
+	//insert a product 
 	public Product insertProduct(Product product, String categoryName) throws AdminException, ProductException, CategoryException;
 
+	//insert new sub category
 	public SubCategory insertSubCategory(SubCategory subCategory, String parentCategoryName) throws CategoryException, AdminException;	
 
-    public User searchByOrder(String orderId, String loggedInAdminId) throws OrderException, AdminException;
+	//get user from order
+    public User searchByOrder(String orderId) throws OrderException, AdminException;
     
+    //add a payment type
     public Payment addPaymentType(Payment payment) throws AdminException, PaymentException;
 
+    //add a new shipper 
     public Shipper addShipper(Shipper shipper) throws AdminException, ShipperException;
- 
+    
+    //add a new supplier
     public Supplier addSupplier(Supplier supplier) throws AdminException, SupplierException;
     
     

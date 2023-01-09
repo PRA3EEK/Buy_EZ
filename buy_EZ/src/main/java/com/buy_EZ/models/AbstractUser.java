@@ -43,12 +43,9 @@ public class AbstractUser {
 	
 	@NotNull(message = "Password cannot be null")
 	@NotBlank(message = "Password cannot be empty")
-	@JsonIgnore
 	private String password;
 	
 	@NotNull(message = "Address cannot be null")
-//	@NotBlank(message = "Address cannot be empty")
-//	@Size(min = 5, max = 225, message = "Length of the address must be greater than 5")
 	@Embedded
 	private Address address;
 	

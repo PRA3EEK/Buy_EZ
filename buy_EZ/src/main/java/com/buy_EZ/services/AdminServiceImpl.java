@@ -187,11 +187,9 @@ public class AdminServiceImpl implements AdminService{
 			}
 			throw new CategoryException("No category is present with the name "+parentCategoryName);
 	}
-	
-	public User searchByOrder(String orderid, String loggedInAdminId) throws OrderException, AdminException{
+	@Override
+	public User searchByOrder(String orderid) throws OrderException, AdminException{
 		
-		if(adminCurrentSession.findById(loggedInAdminId).isPresent())
-		{
 			Optional<Order> oo = orderRepo.findById(orderid);
 			
 			if(oo.isPresent())
@@ -200,8 +198,8 @@ public class AdminServiceImpl implements AdminService{
 				return o.getUser();
 			}
 			throw new OrderException("No order has been placed with the order id "+orderid);			
-		}
-		throw new AdminException("You are no logged in as admin");
+		
+		
 	}
 
 	@Override

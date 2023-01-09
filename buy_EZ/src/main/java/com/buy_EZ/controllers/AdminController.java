@@ -81,7 +81,6 @@ public class AdminController {
 
 	}
 
-	
 	@PostMapping("/add-subCategory")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<SubCategory> insertSubCategory(@RequestBody SubCategory subCategory, @RequestParam("parentCategoryName") String name) throws CategoryException, AdminException{
@@ -89,10 +88,11 @@ public class AdminController {
 		return new ResponseEntity<SubCategory>(adminService.insertSubCategory(subCategory, name), HttpStatus.OK);
 		
 	}
+	
 	@GetMapping("/order/customer")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<User> getCustomerByOrder(@RequestParam("orderId") String orderId, @RequestParam("loggedInAdminId") String adminId) throws OrderException, AdminException{
-		return new ResponseEntity<User>(adminService.searchByOrder(orderId, adminId), HttpStatus.OK);
+	public ResponseEntity<User> getCustomerByOrder(@RequestParam("orderId") String orderId) throws OrderException, AdminException{
+		return new ResponseEntity<User>(adminService.searchByOrder(orderId), HttpStatus.OK);
 	}
 	
 	@PostMapping("/add-payment")
@@ -100,17 +100,20 @@ public class AdminController {
 	public ResponseEntity<Payment> addPayment(@Valid@RequestBody Payment payment) throws AdminException, PaymentException{
 		return new ResponseEntity<Payment>(adminService.addPaymentType(payment), HttpStatus.CREATED);
 	}
+	
 	@PostMapping("/add-shipper")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<Shipper> addShipper(@Valid@RequestBody Shipper shipper) throws AdminException, ShipperException{
 		return new ResponseEntity<Shipper>(adminService.addShipper(shipper), HttpStatus.CREATED);
 	}
+	
 	@PostMapping("/add-supplier")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<Supplier> addSupplier(@Valid@RequestBody Supplier supplier) throws AdminException, SupplierException
 	{
 		return new ResponseEntity<Supplier>(adminService.addSupplier(supplier), HttpStatus.CREATED);
 	}
+	
 	@GetMapping("/msg")
 	@PreAuthorize("hasRole('ADMIN')")
 	public String message() {

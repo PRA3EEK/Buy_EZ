@@ -569,7 +569,7 @@ public class UserServiceImpl implements UserService {
 		}
 		throw new CustomerException("No customer found with the username "+username);
 	}
-	
+	@Override
 	public User updateUsername(String newUsername) throws CustomerException
 	{
 		
@@ -583,7 +583,7 @@ public class UserServiceImpl implements UserService {
 		}
 		throw new CustomerException("No user found with the username "+newUsername);
 	}
-	
+	@Override
 	public User updatePassword(String password) throws CustomerException{
 		
          String username = GetSubject.getUsername();

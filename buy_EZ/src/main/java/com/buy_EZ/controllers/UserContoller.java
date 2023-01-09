@@ -58,32 +58,32 @@ public class UserContoller {
 	public ResponseEntity<List<Product>> searchProductsByCategoryName(@RequestParam(value = "categoryName") String categoryName) throws CategoryException, ProductException, CustomerException{
 		return new ResponseEntity<List<Product>>(userService.searchProductByCategory(categoryName), HttpStatus.OK);
 	}
-	@PostMapping("/add-rating")
+	@PutMapping("/add-rating")
 	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<Product> addRatings(@RequestParam(value = "productId") String productId, @RequestParam(value = "rating") Double rating) throws ProductException, CustomerException{
 		return new ResponseEntity<Product>(userService.addRating(productId, rating), HttpStatus.OK);
 	}
-	@GetMapping("/search/HTL")
+	@GetMapping("/search/HTL-price")
 	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<List<Product>> searchProductsByNameSortHighToLow(@RequestParam(value = "name") String name) throws ProductException, CustomerException{
 		List<Product> products = userService.searchProductsByname(name);
 		return new ResponseEntity<List<Product>>(userService.sortProductsByPriceHighToLow(products), HttpStatus.OK);
 	}
-	@GetMapping("/search/LTH")
+	@GetMapping("/search/LTH-price")
 	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<List<Product>> searchProductsByNameSortLowToHigh(@RequestParam(value = "name") String name, @RequestParam(value = "loggedInId") String id) throws ProductException, CustomerException{
 		List<Product> products = userService.searchProductsByname(name);
 		return new ResponseEntity<List<Product>>(userService.sortProductsByPriceLowToHigh(products), HttpStatus.OK);
 	}
 	
-	@GetMapping("/search/HTL/ratings")
+	@GetMapping("/search/HTL-ratings")
 	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<List<Product>> searchProductByNamesSortHighToLowRatings(@RequestParam(value = "name") String name, @RequestParam(value = "loggedInId") String id) throws ProductException, CustomerException{
 		List<Product> products = userService.searchProductsByname(name);
 		return new ResponseEntity<List<Product>>(userService.sortProductsByRatingsHighToLow(products), HttpStatus.OK);
 	}
 	
-	@GetMapping("/search/LTH/ratings")
+	@GetMapping("/search/LTH-ratings")
 	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<List<Product>> searchProductByNamesSortLowToHighRatings(@RequestParam(value = "name") String name, @RequestParam(value = "loggedInId") String id) throws ProductException, CustomerException{
 		List<Product> products = userService.searchProductsByname(name);
@@ -169,5 +169,22 @@ public class UserContoller {
 	public ResponseEntity<List<Payment>> getPayments()
 	{
 		return new ResponseEntity<List<Payment>>(userService.getAllPaymentType(), HttpStatus.OK);
+	}
+	
+	@PutMapping("/update-address")
+	public ResponseEntity<User> updateAddress(@RequestBody Address address) throws CustomerException
+	{
+		return new ResponseEntity<User>(userService.updateAddress(address), HttpStatus.OK);
+	}
+	
+	@PutMapping("/update-username")
+	public ResponseEntity<User> updateUsername(@RequestParam("username") String newUsername) throws CustomerException
+	{
+		return new ResponseEntity<User>(userService.updateUsername(newUsername), HttpStatus.OK);
+	}
+	@PutMapping("/update-password")
+	public ResponseEntity<User> updatePassword(@RequestParam("password") String password) throws CustomerException
+	{
+		return new ResponseEntity<User>(userService.updatePassword(password), HttpStatus.OK);
 	}
 }
