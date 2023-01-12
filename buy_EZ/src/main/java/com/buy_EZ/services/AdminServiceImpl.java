@@ -108,7 +108,14 @@ public class AdminServiceImpl implements AdminService{
 				return details;
 			}
 			
-			throw new AdminException("An admin is already present with the username "+admin.getUsername());
+			else {
+				User userToAdmin = userRepo.findByUsername(admin.getUsername());
+				Role adminRole = roleRepo.findByName(ERole.ROLE_ADMIN).orElseThrow(() -> new RoleException("Admin Role not found"));
+			    userToAdmin.getRoles().add(adminRole);
+			    AdminDto details = new AdminDto(userToAdmin.getUserId(), userToAdmin.getUsername(), userToAdmin.getPassword()); 
+				userRepo.save(userToAdmin);
+				return details;
+			}
 			
 		}else {
 			throw new AdminException(name+" is not an authorized admin");
