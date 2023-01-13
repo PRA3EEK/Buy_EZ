@@ -30,7 +30,7 @@ http://localhost:8765
 POST request
 
 http://localhost:8765/buy_EZ/auth/register
-headers :{
+
      body :{
      "username":"",
      "firstName":"",
@@ -46,20 +46,20 @@ headers :{
      "email":"",
      "country":""
    }
-   }
+
    ````
    * User login
    ````
  POST request 
  
   http://localhost:8765/buy_EZ/auth/login
- headers : {
+
  body : {
   "id":"",
   "username":"",
   "password":""
  }
- }
+
   ````
   * userLogout
   ````
@@ -121,9 +121,9 @@ http://localhost:8765/buy_EZ/user/cart
 ````
 POST request
 
-uri("http://localhost:8765/buy_EZ/user/cart/order?paymentType={paymentType}")
+http://localhost:8765/buy_EZ/user/cart/order?paymentType={paymentType}
 {
- headers:{
+
   body:{
       address : {
       "city":"",
@@ -132,7 +132,7 @@ uri("http://localhost:8765/buy_EZ/user/cart/order?paymentType={paymentType}")
       "details":""  
      } 
     }
- }
+
 }
 ````
 * getProductsFromOrder- 
@@ -208,7 +208,6 @@ PUT request
 
 http://localhost:8765/buy_EZ/user/update-address
 
-header: {
  body: {
      address : {
       "city":"",
@@ -216,7 +215,6 @@ header: {
       "pincode":"",
       "details":""  
      } 
- }
 }
 ````
 * updateUsername
@@ -245,7 +243,7 @@ headers:{
 POST request
 
 http://localhost:8765/buy_EZ/admin/add
-headers:{
+
   'body': {
        "username":"",
      "firstName":"",
@@ -261,25 +259,25 @@ headers:{
      "email":"",
      "country":""
      }
-}
+
 ````
 * addCategory- 
 ````
 POST request
 
 http://localhost:8765/buy_EZ/admin/add-category
- headers:{
+
    'body': {
      "categoryName":""
      }
-  }
+
   ````
 * addProduct- 
 ````
 POST request
 
 http://localhost:8765/buy_EZ/admin/add-product/{categoryName}
-headers:{
+
    'body': {
    "productName":"",
    "market_price":"",
@@ -291,38 +289,38 @@ headers:{
    "quantity":"",
    "imageUrl":[]
      }
-  }
+
   ````
 * addPayment- 
 ````
 POST request
 
 http://localhost:8765/buy_EZ/admin/add-payment
-headers:{
+
    'body': {
      "type":"",
      "allowed":"(yes/no)"
      }
-  }
+
   ````
 * addShipper- 
 ````
 POST request
 
 http://localhost:8765/buy_EZ/admin/add-shipper
-headers:{
+
    'body': {
      "companyName":"",
      "mobileNumber":""
      }
-  }
+
   ````
 * addSupplier- 
 ````
 POST request
 
 http://localhost:8765/buy_EZ/admin/add-supplier
-headers:{
+
    'body': {
      "companyName":"",
      "city":"",
@@ -332,18 +330,18 @@ headers:{
      "mobileNumber":"",
      "email":""
      }
-  }
+
   ````
 * addSubCategory- 
 ````
 POST request
 
 http://localhost:8765/buy_EZ/admin/add-subCategory
-headers:{
+
    'body': {
      "name":""
      }
-  }
+  
   ````
 * getCustomerByOrder- 
 ````
