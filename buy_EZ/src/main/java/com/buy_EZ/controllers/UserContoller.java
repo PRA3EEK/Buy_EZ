@@ -54,7 +54,6 @@ public class UserContoller {
 		return new ResponseEntity<List<Product>>(userService.searchProductsByname(name), HttpStatus.OK);
 	}
 	@GetMapping("/search/category")
-	@PreAuthorize("hasRole('USER')")
 	public ResponseEntity<List<Product>> searchProductsByCategoryName(@RequestParam(value = "categoryName") String categoryName) throws CategoryException, ProductException, CustomerException{
 		return new ResponseEntity<List<Product>>(userService.searchProductByCategory(categoryName), HttpStatus.OK);
 	}
