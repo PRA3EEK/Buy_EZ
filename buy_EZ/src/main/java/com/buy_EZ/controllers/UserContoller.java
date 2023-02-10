@@ -138,9 +138,9 @@ public class UserContoller {
 	}
     
 	@GetMapping("/products")
-	public ResponseEntity<List<Product>> getAllProducts()
+	public ResponseEntity<List<Product>> getAllProducts(@RequestParam("page") int pageNumber, @RequestParam("size") int size)
 	{
-		return new ResponseEntity<List<Product>>(userService.getAllProducts(), HttpStatus.OK);
+		return new ResponseEntity<List<Product>>(userService.getAllProducts(pageNumber, size), HttpStatus.OK);
 	}
 	
 	@GetMapping("/details")

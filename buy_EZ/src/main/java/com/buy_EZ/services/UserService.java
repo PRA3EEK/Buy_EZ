@@ -66,7 +66,7 @@ public interface UserService {
 	public List<SubCategory> getAllSubCategories();
 	
 	//get all products
-	public List<Product> getAllProducts();
+	public List<Product> getAllProducts(int pageNumber, int size);
 	
 	//get userdetails
 	public User getUserDetails() throws CustomerException;

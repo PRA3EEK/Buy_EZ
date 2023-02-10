@@ -5,16 +5,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.validation.ValidationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +30,6 @@ import com.buy_EZ.exceptions.ProductException;
 import com.buy_EZ.models.Address;
 import com.buy_EZ.models.Cart;
 import com.buy_EZ.models.Category;
-import com.buy_EZ.models.CustomerCurrentSession;
 import com.buy_EZ.models.Order;
 import com.buy_EZ.models.OrderDetails;
 import com.buy_EZ.models.Payment;
@@ -487,9 +486,10 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<Product> getAllProducts() {
+	public List<Product> getAllProducts(int pageNumber, int size) {
 		// TODO Auto-generated method stub
-        return productRepo.findAll();
+		Pageable page = PageRequest.of(pageNumber, size);
+        return productRepo.findAll(page).getContent();
 	}
 
 	@Override
