@@ -62,7 +62,7 @@ public class ConfigClass{
 		.authorizeHttpRequests()
         
 			
-			.antMatchers("/buy_EZ/auth/register", "/buy_EZ/auth/login", "/buy_EZ/user/categories", "/products/**", "/buy_EZ/user/details", "/buy_EZ/user/searchById", "/buy_EZ/user/search", "/buy_EZ/user/payments", "/buy_EZ/user/search/category").permitAll()
+			.antMatchers("/register/**", "/login/**", "/categories/**", "/products/**", "/details/**", "/searchById/**", "/search/**", "/payments/**", "/category/**").permitAll()
 			.anyRequest().authenticated();
 
 		http.authenticationProvider(authenticationProvider());

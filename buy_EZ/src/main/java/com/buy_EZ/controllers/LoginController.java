@@ -49,7 +49,6 @@ import com.buy_EZ.services.LoginServiceImpl;
 import net.bytebuddy.utility.RandomString;
 
 @RestController
-@RequestMapping("/buy_EZ/auth")
 @CrossOrigin(origins = "*")
 public class LoginController {
 

@@ -46,7 +46,6 @@ import com.buy_EZ.services.UserService;
 import net.bytebuddy.utility.RandomString;
 
 @RestController
-@RequestMapping("/buy_EZ/admin")
 @CrossOrigin("*")
 public class AdminController {
 	@Autowired
