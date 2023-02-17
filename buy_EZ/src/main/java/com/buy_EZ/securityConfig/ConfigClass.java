@@ -62,7 +62,7 @@ public class ConfigClass{
 		.authorizeHttpRequests()
         
 			
-			.antMatchers("/buy_EZ/auth/register", "/buy_EZ/auth/login", "/buy_EZ/user/categories", "/buy_EZ/user/products", "/buy_EZ/user/details", "/buy_EZ/user/searchById", "/buy_EZ/user/search", "/buy_EZ/user/payments", "/buy_EZ/user/search/category", "buyez-production.up.railway.app/products").permitAll()
+			.antMatchers("/buy_EZ/auth/register", "/buy_EZ/auth/login", "/buy_EZ/user/categories", "/buy_EZ/user/products", "/buy_EZ/user/details", "/buy_EZ/user/searchById", "/buy_EZ/user/search", "/buy_EZ/user/payments", "/buy_EZ/user/search/category", "/buyez-production.up.railway.app/products").permitAll()
 			.anyRequest().authenticated();
 
 			
