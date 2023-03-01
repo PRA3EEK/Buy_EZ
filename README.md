@@ -29,7 +29,7 @@ http://localhost:8765
 ````
 POST request
 
-http://localhost:8765/buy_EZ/auth/register
+http://localhost:8765/register
 
      body :{
      "username":"",
@@ -52,7 +52,7 @@ http://localhost:8765/buy_EZ/auth/register
    ````
  POST request 
  
-  http://localhost:8765/buy_EZ/auth/login
+  http://localhost:8765/login
 
  body : {
   "id":"",
@@ -65,7 +65,7 @@ http://localhost:8765/buy_EZ/auth/register
   ````
   DELETE request
   
-  http://localhost:8765/buy_EZ/auth/logout
+  http://localhost:8765/logout
   ````
 ## User Controller:-
 
@@ -79,49 +79,49 @@ headers:{
  ````
  GET request
  
- http://localhost:8765/buy_EZ/user/search?name={name}
+ http://localhost:8765/search?name={name}
  ````
 * searchProductsByCategoryName- 
 ````
 GET request
 
-http://localhost:8765/buy_EZ/user/search/category?categoryName={categoryName}
+http://localhost:8765/search/category?categoryName={categoryName}
 ````
 * addRatings- 
 ````
 PUT request
 
-http://localhost:8765/buy_EZ/user/add-rating?productId={productId}&rating={rating between 1-5}
+http://localhost:8765/add-rating?productId={productId}&rating={rating between 1-5}
 ````
 * getProductDetails- 
 ````
 GET request
 
-http://localhost:8765/buy_EZ/user/searchById?productId={productId}
+http://localhost:8765/searchById?productId={productId}
 ````
 * addProductToCart- 
 ````
 POST request
 
-http://localhost:8765/buy_EZ/user/add-cart?productId={productId}&quantity={quantity}
+http://localhost:8765/add-cart?productId={productId}&quantity={quantity}
 ````
 * deleteProductFromCart- 
 ````
 DELETE request
 
-http://localhost:8765/buy_EZ/user/delete-cart?productId={productId}
+http://localhost:8765/delete-cart?productId={productId}
 ````
 * getCartDetails- 
 ````
 GET request
 
-http://localhost:8765/buy_EZ/user/cart
+http://localhost:8765/cart
 ````
 * placeOrder- 
 ````
 POST request
 
-http://localhost:8765/buy_EZ/user/cart/order?paymentType={paymentType}
+http://localhost:8765/cart/order?paymentType={paymentType}
 {
 
   body:{
@@ -139,74 +139,74 @@ http://localhost:8765/buy_EZ/user/cart/order?paymentType={paymentType}
 ````
 GET request
 
-http://localhost:8765/buy_EZ/user/order/products?orderId={orderId}
+http://localhost:8765/order/products?orderId={orderId}
 ````
 * getAllCategories- 
 ````
 GET request
 
-http://localhost:8765/buy_EZ/user/categories
+http://localhost:8765/categories
 ````
 * getAllSubCategories- 
 ````
 GET request
 
-http://localhost:8765/buy_EZ/user/subCategories
+http://localhost:8765/subCategories
 ````
 * getUserDetails- 
 ````
 GET request
 
-http://localhost:8765/buy_EZ/user/details
+http://localhost:8765/details
 ````
 * getAllUserOrders- 
 ````
 GET request
 
-http://localhost:8765/buy_EZ/user/orders
+http://localhost:8765/orders
 ````
 * getAllPayments- 
 ````
 GET request
 
-http://localhost:8765/buy_EZ/user/payments
+http://localhost:8765/payments
 ````
 * updateQuantity- 
 ##### Updates the quantity of the product presented in the cart of the user.
 ```
 PUT request
 
-http://localhost:8765/buy_EZ/user/update-quantity?productId=&quantity
+http://localhost:8765/update-quantity?productId=&quantity
 ````
 * searchProductsByNameSortHighToLow- 
 ````
 GET request
 
-http://localhost:8765/buy_EZ/user/search/HTL-price?name={name to search products with}
+http://localhost:8765/search/HTL-price?name={name to search products with}
 ````
 * searchProductsByNameSortLowToHigh- 
 ````
 GET request
 
-http://localhost:8765/buy_EZ/user/search/LTH-price?name={name to search products with}
+http://localhost:8765/search/LTH-price?name={name to search products with}
 ````
 * searchProductByNamesSortHighToLowRatings- 
 ````
 GET request
 
-http://localhost:8765/buy_EZ/user/search/HTL-ratings?name={name to search products with}
+http://localhost:8765/search/HTL-ratings?name={name to search products with}
 ````
 * searchProductByNamesSortLowToHighRatings- 
 ````
 GET request
 
-http://localhost:8765/buy_EZ/user/search/LTH-ratings?name={name to search products with}
+http://localhost:8765/search/LTH-ratings?name={name to search products with}
 ````
 * updateAddress
 ````
 PUT request
 
-http://localhost:8765/buy_EZ/user/update-address
+http://localhost:8765/update-address
 
  body: {
      address : {
@@ -221,14 +221,14 @@ http://localhost:8765/buy_EZ/user/update-address
 ````
 PUT request
 
-http://localhost:8765/buy_EZ/user/update-username?username={newUsername}
+http://localhost:8765/update-username?username={newUsername}
 
 ````
 * updatePassword
 ````
 PUT request
 
-http://localhost:8765/buy_EZ/user/update-password?password={newPassword}
+http://localhost:8765/update-password?password={newPassword}
 ````
 
 ## Admin controller:-
@@ -242,7 +242,7 @@ headers:{
 ````
 POST request
 
-http://localhost:8765/buy_EZ/admin/add
+http://localhost:8765/add
 
   'body': {
        "username":"",
@@ -265,7 +265,7 @@ http://localhost:8765/buy_EZ/admin/add
 ````
 POST request
 
-http://localhost:8765/buy_EZ/admin/add-category
+http://localhost:8765/add-category
 
    'body': {
      "categoryName":""
@@ -276,7 +276,7 @@ http://localhost:8765/buy_EZ/admin/add-category
 ````
 POST request
 
-http://localhost:8765/buy_EZ/admin/add-product/{categoryName}
+http://localhost:8765/add-product/{categoryName}
 
    'body': {
    "productName":"",
@@ -295,7 +295,7 @@ http://localhost:8765/buy_EZ/admin/add-product/{categoryName}
 ````
 POST request
 
-http://localhost:8765/buy_EZ/admin/add-payment
+http://localhost:8765/add-payment
 
    'body': {
      "type":"",
@@ -307,7 +307,7 @@ http://localhost:8765/buy_EZ/admin/add-payment
 ````
 POST request
 
-http://localhost:8765/buy_EZ/admin/add-shipper
+http://localhost:8765/add-shipper
 
    'body': {
      "companyName":"",
@@ -319,7 +319,7 @@ http://localhost:8765/buy_EZ/admin/add-shipper
 ````
 POST request
 
-http://localhost:8765/buy_EZ/admin/add-supplier
+http://localhost:8765/add-supplier
 
    'body': {
      "companyName":"",
@@ -336,7 +336,7 @@ http://localhost:8765/buy_EZ/admin/add-supplier
 ````
 POST request
 
-http://localhost:8765/buy_EZ/admin/add-subCategory
+http://localhost:8765/add-subCategory
 
    'body': {
      "name":""
@@ -347,7 +347,7 @@ http://localhost:8765/buy_EZ/admin/add-subCategory
 ````
 GET request
 
-http://localhost:8765/buy_EZ/admin/order/customer?orderId={orderId}
+http://localhost:8765/order/customer?orderId={orderId}
 ````
 
 
