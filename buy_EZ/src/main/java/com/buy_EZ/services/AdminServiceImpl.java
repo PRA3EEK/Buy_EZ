@@ -234,4 +234,16 @@ public class AdminServiceImpl implements AdminService{
 
          throw new SupplierException("Supplier already present");
 	}
+
+	@Override
+	public String deleteProduct(String productId) throws ProductException {
+		// TODO Auto-generated method stub
+		Optional<Product> productOptional = productRepo.findById(productId);
+		if(productOptional.isPresent()) {
+			productRepo.delete(productOptional.get());	
+			return "Product with id "+productId+" and product name "+productOptional.get().getProductName()+" is deleted successfully!";
+		}
+         
+		throw new ProductException("No product found with the id "+productId);
+	}
 }

@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -111,6 +112,12 @@ public class AdminController {
 	public ResponseEntity<Supplier> addSupplier(@Valid@RequestBody Supplier supplier) throws AdminException, SupplierException
 	{
 		return new ResponseEntity<Supplier>(adminService.addSupplier(supplier), HttpStatus.CREATED);
+	}
+	
+	@DeleteMapping("/delete-product")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<String> deleteProduct(@RequestParam("productId") String productId) throws ProductException{
+		return new ResponseEntity<String>(adminService.deleteProduct(productId), HttpStatus.OK);
 	}
 	
 	@GetMapping("/msg")

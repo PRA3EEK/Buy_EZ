@@ -44,5 +44,7 @@ public interface AdminService {
     public Supplier addSupplier(Supplier supplier) throws AdminException, SupplierException;
     
     
+    public String deleteProduct(String productId) throws ProductException;
+    
 
 }
